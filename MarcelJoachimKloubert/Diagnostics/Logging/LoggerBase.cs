@@ -98,7 +98,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
 
         #endregion Methods (2)
 
-        #region Properties (1)
+        #region Properties (2)
 
         /// <summary>
         /// Gets the object for thread safe operations.
@@ -108,6 +108,11 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
             get { return _SYNC_ROOT; }
         }
 
-        #endregion Properties (1)
+        /// <summary>
+        /// Gets or sets an object that should be linked with that instance.
+        /// </summary>
+        public virtual object Tag { get; set; }
+
+        #endregion Properties (2)
     }
 }
