@@ -69,7 +69,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
                 var logMsg = new LogMessage()
                     {
                         Category = category,
-                        Message = DBNull.Value.Equals(msg) ? null : msg,
+                        Message = msg,
                         Priority = prio,
                         Tag = string.IsNullOrWhiteSpace(tag) ? null : tag.ToUpper().Trim(),
                         Time = now,

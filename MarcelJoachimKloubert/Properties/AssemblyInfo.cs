@@ -28,7 +28,6 @@
  **********************************************************************************************************************/
 
 using System.Reflection;
-using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Diagnostics.NET")]
 [assembly: AssemblyDescription("Classes for debug and diagnostic operations.")]
@@ -38,10 +37,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright © 2015  Marcel Joachim Kloubert")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-
-[assembly: ComVisible(false)]
-
-[assembly: Guid("51d2f3ff-7d52-40ce-9312-3a06f7858ba3")]
 
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
