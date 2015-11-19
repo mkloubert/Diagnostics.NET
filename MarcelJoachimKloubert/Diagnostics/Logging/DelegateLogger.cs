@@ -32,112 +32,59 @@ using System;
 namespace MarcelJoachimKloubert.Diagnostics.Logging
 {
     /// <summary>
-    /// A logger that wraps another one.
+    /// A logger that uses a delegate to log.
     /// </summary>
-    public class LoggerWrapper : LoggerBase
+    public class DelegateLogger : LoggerBase
     {
         #region Fields (1)
 
-        private readonly LoggerProvider _PROVIDER;
+        private readonly LogAction _ACTION;
 
         #endregion Fields (1)
 
-        #region Constructors (2)
+        #region Constructors (1)
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggerWrapper" /> class.
+        /// Initializes a new instance of the <see cref="LoggerBase" /> class.
         /// </summary>
-        /// <param name="baseLogger">The value for the <see cref="LoggerWrapper.BaseLogger" /> property.</param>
+        /// <param name="action">The action to use.</param>
         /// <param name="syncRoot">The custom object for thread safe operations.</param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="baseLogger" /> is <see langword="null" />.
+        /// <paramref name="action" /> is <see langword="null" />.
         /// </exception>
-        public LoggerWrapper(ILogger baseLogger, object syncRoot = null)
-            : this(provider: CreateProvider(baseLogger),
-                   syncRoot: syncRoot)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoggerWrapper" /> class.
-        /// </summary>
-        /// <param name="provider">The function that provides the value for the <see cref="LoggerWrapper.BaseLogger" /> property.</param>
-        /// <param name="syncRoot">The custom object for thread safe operations.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="provider" /> is <see langword="null" />.
-        /// </exception>
-        public LoggerWrapper(LoggerProvider provider, object syncRoot = null)
+        public DelegateLogger(LogAction action, object syncRoot = null)
             : base(syncRoot: syncRoot)
         {
-            if (provider == null)
+            if (action == null)
             {
-                throw new ArgumentNullException("provider");
+                throw new ArgumentNullException("action");
             }
 
-            _PROVIDER = provider;
+            _ACTION = action;
         }
 
-        #endregion Constructors (2)
+        #endregion Constructors (1)
 
         #region Delegates (1)
 
         /// <summary>
-        /// A function that provides the value for an <see cref="LoggerWrapper.BaseLogger" /> property.
+        /// Describes a log action.
         /// </summary>
-        /// <param name="logger">The parent logger.</param>
-        /// <returns>The wrapped logger.</returns>
-        public delegate ILogger LoggerProvider(LoggerWrapper logger);
+        /// <param name="logger">The base logger.</param>
+        /// <param name="msg">The log message.</param>
+        /// <param name="success">The variable that stores if operation was successful or not.</param>
+        public delegate void LogAction(DelegateLogger logger, ILogMessage msg, ref bool success);
 
         #endregion Delegates (1)
 
-        #region Properties (1)
-
-        /// <summary>
-        /// Gets the wrapped logger.
-        /// </summary>
-        public ILogger BaseLogger
-        {
-            get { return _PROVIDER(this); }
-        }
-
-        #endregion Properties (1)
-
-        #region Methods (2)
-
-        /// <summary>
-        /// Creates a provider from a logger.
-        /// </summary>
-        /// <param name="baseLogger">The base logger.</param>
-        /// <returns>The created provider.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="baseLogger" /> is <see langword="null" />.
-        /// </exception>
-        protected static LoggerProvider CreateProvider(ILogger baseLogger)
-        {
-            if (baseLogger == null)
-            {
-                throw new ArgumentNullException("baseLogger");
-            }
-
-            return (logger) => baseLogger;
-        }
+        #region Methods (1)
 
         /// <inheriteddoc />
         protected override void OnLog(ILogMessage msg, ref bool success)
         {
-            var logger = BaseLogger;
-            if (null != logger)
-            {
-                success = BaseLogger.Log(msg: msg.Message,
-                                         category: msg.Category, prio: msg.Priority,
-                                         tag: msg.Tag);
-            }
-            else
-            {
-                success = false;
-            }
+            _ACTION(this, msg, ref success);
         }
 
-        #endregion Methods (2)
+        #endregion Methods (1)
     }
 }

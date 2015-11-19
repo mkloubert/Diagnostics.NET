@@ -32,112 +32,119 @@ using System;
 namespace MarcelJoachimKloubert.Diagnostics.Logging
 {
     /// <summary>
-    /// A logger that wraps another one.
+    /// A logger that uses a fallback logger is logging via base logger failes.
     /// </summary>
-    public class LoggerWrapper : LoggerBase
+    public class FallbackLogger : LoggerWrapper
     {
         #region Fields (1)
 
-        private readonly LoggerProvider _PROVIDER;
+        private readonly LoggerProvider _FALLBACK_PROVIDER;
 
         #endregion Fields (1)
 
-        #region Constructors (2)
+        #region Constructors (4)
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggerWrapper" /> class.
+        /// Initializes a new instance of the <see cref="FallbackLogger" /> class.
         /// </summary>
-        /// <param name="baseLogger">The value for the <see cref="LoggerWrapper.BaseLogger" /> property.</param>
-        /// <param name="syncRoot">The custom object for thread safe operations.</param>
+        /// <param name="baseLogger">The main / base logger.</param>
+        /// <param name="fallbackLogger">The fallback logger.</param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="baseLogger" /> is <see langword="null" />.
+        /// <paramref name="baseLogger" /> and/or <paramref name="fallbackLogger" /> is <see langword="null" />.
         /// </exception>
-        public LoggerWrapper(ILogger baseLogger, object syncRoot = null)
-            : this(provider: CreateProvider(baseLogger),
-                   syncRoot: syncRoot)
+        public FallbackLogger(ILogger baseLogger, ILogger fallbackLogger)
+            : this(baseLogger: baseLogger,
+                   fallbackProvider: CreateProvider(fallbackLogger))
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggerWrapper" /> class.
+        /// Initializes a new instance of the <see cref="FallbackLogger" /> class.
         /// </summary>
-        /// <param name="provider">The function that provides the value for the <see cref="LoggerWrapper.BaseLogger" /> property.</param>
-        /// <param name="syncRoot">The custom object for thread safe operations.</param>
+        /// <param name="baseLogger">The main / base logger.</param>
+        /// <param name="fallbackProvider">The function that provides the fallback logger.</param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="provider" /> is <see langword="null" />.
+        /// <paramref name="baseLogger" /> and/or <paramref name="fallbackProvider" /> is <see langword="null" />.
         /// </exception>
-        public LoggerWrapper(LoggerProvider provider, object syncRoot = null)
-            : base(syncRoot: syncRoot)
+        public FallbackLogger(ILogger baseLogger, LoggerProvider fallbackProvider)
+            : this(baseProvider: CreateProvider(baseLogger),
+                   fallbackProvider: fallbackProvider)
         {
-            if (provider == null)
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FallbackLogger" /> class.
+        /// </summary>
+        /// <param name="baseProvider">The function that provides the main / base logger.</param>
+        /// <param name="fallbackLogger">The fallback logger.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="baseProvider" /> and/or <paramref name="fallbackLogger" /> is <see langword="null" />.
+        /// </exception>
+        public FallbackLogger(LoggerProvider baseProvider, ILogger fallbackLogger)
+            : this(baseProvider: baseProvider,
+                   fallbackProvider: CreateProvider(fallbackLogger))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FallbackLogger" /> class.
+        /// </summary>
+        /// <param name="baseProvider">The function that provides the main / base logger.</param>
+        /// <param name="fallbackProvider">The function that provides the fallback logger.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="baseProvider" /> and/or <paramref name="fallbackProvider" /> is <see langword="null" />.
+        /// </exception>
+        public FallbackLogger(LoggerProvider baseProvider, LoggerProvider fallbackProvider)
+            : base(provider: baseProvider)
+        {
+            if (fallbackProvider == null)
             {
-                throw new ArgumentNullException("provider");
+                throw new ArgumentNullException("fallbackProvider");
             }
 
-            _PROVIDER = provider;
+            _FALLBACK_PROVIDER = fallbackProvider;
         }
 
-        #endregion Constructors (2)
-
-        #region Delegates (1)
-
-        /// <summary>
-        /// A function that provides the value for an <see cref="LoggerWrapper.BaseLogger" /> property.
-        /// </summary>
-        /// <param name="logger">The parent logger.</param>
-        /// <returns>The wrapped logger.</returns>
-        public delegate ILogger LoggerProvider(LoggerWrapper logger);
-
-        #endregion Delegates (1)
+        #endregion Constructors (4)
 
         #region Properties (1)
 
         /// <summary>
-        /// Gets the wrapped logger.
+        /// Gets the fallback logger.
         /// </summary>
-        public ILogger BaseLogger
+        public ILogger Fallback
         {
-            get { return _PROVIDER(this); }
+            get { return _FALLBACK_PROVIDER(this); }
         }
 
         #endregion Properties (1)
 
-        #region Methods (2)
-
-        /// <summary>
-        /// Creates a provider from a logger.
-        /// </summary>
-        /// <param name="baseLogger">The base logger.</param>
-        /// <returns>The created provider.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="baseLogger" /> is <see langword="null" />.
-        /// </exception>
-        protected static LoggerProvider CreateProvider(ILogger baseLogger)
-        {
-            if (baseLogger == null)
-            {
-                throw new ArgumentNullException("baseLogger");
-            }
-
-            return (logger) => baseLogger;
-        }
+        #region Methods (1)
 
         /// <inheriteddoc />
         protected override void OnLog(ILogMessage msg, ref bool success)
         {
-            var logger = BaseLogger;
-            if (null != logger)
+            try
             {
-                success = BaseLogger.Log(msg: msg.Message,
-                                         category: msg.Category, prio: msg.Priority,
-                                         tag: msg.Tag);
+                base.OnLog(msg, ref success);
             }
-            else
+            catch
             {
                 success = false;
             }
+
+            if (!success)
+            {
+                var fb = Fallback;
+                if (fb != null)
+                {
+                    success = fb.Log(msg: msg.Message,
+                                     category: msg.Category, prio: msg.Priority,
+                                     tag: msg.Tag);
+                }
+            }
         }
 
-        #endregion Methods (2)
+        #endregion Methods (1)
     }
 }
