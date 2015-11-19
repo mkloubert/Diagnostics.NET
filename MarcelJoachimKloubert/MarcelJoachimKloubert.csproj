@@ -51,6 +51,7 @@
     <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Diagnostics\Logging\AggregateLogger.cs" />
     <Compile Include="Diagnostics\Logging\AsyncLogger.cs" />
+    <Compile Include="Diagnostics\Logging\TextLogger.cs" />
     <Compile Include="Diagnostics\Logging\DelegateLogger.cs" />
     <Compile Include="Diagnostics\Logging\EventLogger.cs" />
     <Compile Include="Diagnostics\Logging\FallbackLogger.cs" />
