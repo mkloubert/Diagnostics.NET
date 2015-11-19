@@ -99,7 +99,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         {
             if (fallbackProvider == null)
             {
-                throw new ArgumentNullException("fallbackProvider");
+                throw new ArgumentNullException(nameof(fallbackProvider));
             }
 
             _FALLBACK_PROVIDER = fallbackProvider;
@@ -112,10 +112,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         /// <summary>
         /// Gets the fallback logger.
         /// </summary>
-        public ILogger Fallback
-        {
-            get { return _FALLBACK_PROVIDER(this); }
-        }
+        public ILogger Fallback => _FALLBACK_PROVIDER(this);
 
         #endregion Properties (1)
 

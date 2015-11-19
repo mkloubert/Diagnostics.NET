@@ -59,7 +59,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         /// <summary>
         /// Gets the log message.
         /// </summary>
-        public ILogMessage Message { get; private set; }
+        public ILogMessage Message { get; }
 
         #endregion Properties (2)
     }

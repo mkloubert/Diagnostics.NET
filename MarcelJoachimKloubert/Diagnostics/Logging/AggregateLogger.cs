@@ -73,7 +73,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         {
             if (logger == null)
             {
-                throw new ArgumentNullException("logger");
+                throw new ArgumentNullException(nameof(logger));
             }
 
             _LOGGERS.Add(logger);

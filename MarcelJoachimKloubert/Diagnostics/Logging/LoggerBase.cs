@@ -36,12 +36,6 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
     /// </summary>
     public abstract partial class LoggerBase : ILogger
     {
-        #region Fields (1)
-
-        private readonly object _SYNC_ROOT;
-
-        #endregion Fields (1)
-
         #region Constructors (1)
 
         /// <summary>
@@ -50,7 +44,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         /// <param name="syncRoot">The custom object for thread safe operations.</param>
         protected LoggerBase(object syncRoot = null)
         {
-            _SYNC_ROOT = syncRoot ?? new object();
+            SyncRoot = syncRoot ?? new object();
         }
 
         #endregion Constructors (1)
@@ -67,13 +61,13 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
                 var now = DateTimeOffset.Now;
 
                 var logMsg = new LogMessage()
-                    {
-                        Category = category,
-                        Message = DBNull.Value.Equals(msg) ? null : msg,
-                        Priority = prio,
-                        Tag = string.IsNullOrWhiteSpace(tag) ? null : tag.ToUpper().Trim(),
-                        Time = now,
-                    };
+                {
+                    Category = category,
+                    Message = DBNull.Value.Equals(msg) ? null : msg,
+                    Priority = prio,
+                    Tag = string.IsNullOrWhiteSpace(tag) ? null : tag.ToUpper().Trim(),
+                    Time = now,
+                };
 
                 var result = true;
                 OnLog(logMsg, ref result);
@@ -103,10 +97,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         /// <summary>
         /// Gets the object for thread safe operations.
         /// </summary>
-        public object SyncRoot
-        {
-            get { return _SYNC_ROOT; }
-        }
+        public object SyncRoot { get; }
 
         /// <summary>
         /// Gets or sets an object that should be linked with that instance.

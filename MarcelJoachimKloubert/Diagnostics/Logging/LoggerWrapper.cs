@@ -71,7 +71,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         {
             if (provider == null)
             {
-                throw new ArgumentNullException("provider");
+                throw new ArgumentNullException(nameof(provider));
             }
 
             _PROVIDER = provider;
@@ -95,10 +95,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         /// <summary>
         /// Gets the wrapped logger.
         /// </summary>
-        public ILogger BaseLogger
-        {
-            get { return _PROVIDER(this); }
-        }
+        public ILogger BaseLogger => _PROVIDER(this);
 
         #endregion Properties (1)
 
@@ -116,7 +113,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         {
             if (baseLogger == null)
             {
-                throw new ArgumentNullException("baseLogger");
+                throw new ArgumentNullException(nameof(baseLogger));
             }
 
             return (logger) => baseLogger;

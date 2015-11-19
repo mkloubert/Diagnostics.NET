@@ -54,9 +54,9 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
             if (handler != null)
             {
                 var e = new LogEventArgs(msg)
-                    {
-                        Handled = true,
-                    };
+                {
+                    Handled = true,
+                };
                 handler(this, e);
 
                 success = e.Handled;

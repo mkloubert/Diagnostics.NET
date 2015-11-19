@@ -57,7 +57,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         {
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
 
             _ACTION = action;
