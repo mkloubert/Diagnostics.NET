@@ -130,16 +130,20 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
                 success = false;
             }
 
-            if (!success)
+            if (success)
             {
-                var fb = Fallback;
-                if (fb != null)
-                {
-                    success = fb.Log(msg: msg.Message,
-                                     category: msg.Category, prio: msg.Priority,
-                                     tag: msg.Tag);
-                }
+                return;
             }
+
+            var fb = Fallback;
+            if (fb == null)
+            {
+                return;
+            }
+
+            success = fb.Log(msg: msg.Message,
+                             category: msg.Category, prio: msg.Priority,
+                             tag: msg.Tag);
         }
 
         #endregion Methods (1)
