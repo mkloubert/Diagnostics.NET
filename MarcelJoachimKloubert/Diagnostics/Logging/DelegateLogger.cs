@@ -32,13 +32,13 @@ using System;
 namespace MarcelJoachimKloubert.Diagnostics.Logging
 {
     /// <summary>
-    /// A basic logger.
+    /// A logger that uses a delegate to log.
     /// </summary>
-    public abstract partial class LoggerBase : ILogger
+    public class DelegateLogger : LoggerBase
     {
         #region Fields (1)
 
-        private readonly object _SYNC_ROOT;
+        private readonly LogAction _ACTION;
 
         #endregion Fields (1)
 
@@ -47,72 +47,44 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerBase" /> class.
         /// </summary>
+        /// <param name="action">The action to use.</param>
         /// <param name="syncRoot">The custom object for thread safe operations.</param>
-        protected LoggerBase(object syncRoot = null)
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="action" /> is <see langword="null" />.
+        /// </exception>
+        public DelegateLogger(LogAction action, object syncRoot = null)
+            : base(syncRoot: syncRoot)
         {
-            _SYNC_ROOT = syncRoot ?? new object();
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+
+            _ACTION = action;
         }
 
         #endregion Constructors (1)
 
-        #region Methods (2)
+        #region Delegates (1)
+
+        /// <summary>
+        /// Describes a log action.
+        /// </summary>
+        /// <param name="logger">The base logger.</param>
+        /// <param name="msg">The log message.</param>
+        /// <param name="success">The variable that stores if operation was successful or not.</param>
+        public delegate void LogAction(DelegateLogger logger, ILogMessage msg, ref bool success);
+
+        #endregion Delegates (1)
+
+        #region Methods (1)
 
         /// <inheriteddoc />
-        public bool Log(object msg,
-                        LogCategory category = LogCategory.Info, LogPriority prio = LogPriority.None,
-                        string tag = null)
+        protected override void OnLog(ILogMessage msg, ref bool success)
         {
-            try
-            {
-                var now = DateTimeOffset.Now;
-
-                var logMsg = new LogMessage()
-                    {
-                        Category = category,
-                        Message = DBNull.Value.Equals(msg) ? null : msg,
-                        Priority = prio,
-                        Tag = string.IsNullOrWhiteSpace(tag) ? null : tag.ToUpper().Trim(),
-                        Time = now,
-                    };
-
-                var result = true;
-                OnLog(logMsg, ref result);
-
-                return result;
-            }
-            catch
-            {
-                return false;
-            }
+            _ACTION(this, msg, ref success);
         }
 
-        /// <summary>
-        /// The logic for the <see cref="LoggerBase.Log(object, LogCategory, LogPriority, string)" /> method.
-        /// </summary>
-        /// <param name="msg">The message.</param>
-        /// <param name="success">
-        /// The variable that defines the result for <see cref="LoggerBase.Log(object, LogCategory, LogPriority, string)" /> method.
-        /// Is <see langword="true" /> by default.
-        /// </param>
-        protected abstract void OnLog(ILogMessage msg, ref bool success);
-
-        #endregion Methods (2)
-
-        #region Properties (2)
-
-        /// <summary>
-        /// Gets the object for thread safe operations.
-        /// </summary>
-        public object SyncRoot
-        {
-            get { return _SYNC_ROOT; }
-        }
-
-        /// <summary>
-        /// Gets or sets an object that should be linked with that instance.
-        /// </summary>
-        public virtual object Tag { get; set; }
-
-        #endregion Properties (2)
+        #endregion Methods (1)
     }
 }
