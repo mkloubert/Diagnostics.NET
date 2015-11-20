@@ -131,6 +131,15 @@
     <Compile Include="Diagnostics\Logging\LogPriority.cs" />
     <Compile Include="Diagnostics\Logging\NullLogger.cs" />
     <Compile Include="Diagnostics\Logging\SynchornizedLogger.cs" />
+    <Compile Include="Monitoring\DelegateMonitor.cs" />
+    <Compile Include="Monitoring\IMonitor.cs" />
+    <Compile Include="Monitoring\IMonitorInfo.cs" />
+    <Compile Include="Monitoring\MonitorBase.cs" />
+    <Compile Include="Monitoring\MonitorBase.MonitorInfo.cs">
+      <DependentUpon>MonitorBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Monitoring\MonitorState.cs" />
+    <Compile Include="Monitoring\MonitorWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\MarcelJoachimKloubert.rd.xml" />
   </ItemGroup>
