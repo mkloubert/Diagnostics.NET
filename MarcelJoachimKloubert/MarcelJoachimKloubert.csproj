@@ -66,6 +66,7 @@
     <Compile Include="Diagnostics\Logging\LogPriority.cs" />
     <Compile Include="Diagnostics\Logging\NullLogger.cs" />
     <Compile Include="Diagnostics\Logging\SynchornizedLogger.cs" />
+    <Compile Include="Monitoring\CachedMonitor.cs" />
     <Compile Include="Monitoring\DelegateMonitor.cs" />
     <Compile Include="Monitoring\IMonitor.cs" />
     <Compile Include="Monitoring\IMonitorInfo.cs" />
