@@ -53,7 +53,7 @@ namespace MarcelJoachimKloubert.Monitoring
         {
             if (baseMonitor == null)
             {
-                throw new ArgumentNullException("baseMonitor");
+                throw new ArgumentNullException(nameof(baseMonitor));
             }
 
             BaseMonitor = baseMonitor;

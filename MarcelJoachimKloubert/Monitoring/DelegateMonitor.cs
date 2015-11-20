@@ -57,7 +57,7 @@ namespace MarcelJoachimKloubert.Monitoring
         {
             if (provider == null)
             {
-                throw new ArgumentNullException("provider");
+                throw new ArgumentNullException(nameof(provider));
             }
 
             _PROVIDER = provider;

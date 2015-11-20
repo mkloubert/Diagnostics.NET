@@ -38,12 +38,6 @@ namespace MarcelJoachimKloubert.Monitoring
     /// </summary>
     public abstract partial class MonitorBase : IMonitor
     {
-        #region Fields (1)
-
-        private readonly object _SYNC_ROOT;
-
-        #endregion Fields (1)
-
         #region Constructors (1)
 
         /// <summary>
@@ -52,7 +46,7 @@ namespace MarcelJoachimKloubert.Monitoring
         /// <param name="syncRoot"></param>
         protected MonitorBase(object syncRoot = null)
         {
-            _SYNC_ROOT = syncRoot ?? new object();
+            SyncRoot = syncRoot ?? new object();
         }
 
         #endregion Constructors (1)
@@ -74,10 +68,7 @@ namespace MarcelJoachimKloubert.Monitoring
         /// <summary>
         /// Gets the object for thread safe operations.
         /// </summary>
-        public object SyncRoot
-        {
-            get { return _SYNC_ROOT; }
-        }
+        public object SyncRoot { get; }
 
         #endregion Properties (2)
 
