@@ -76,14 +76,14 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
 
         private void OnLogTask(object state)
         {
-            var success = true;
             try
             {
+                var success = true;
                 base.OnLog((ILogMessage)state, ref success);
             }
             catch
             {
-                success = false;
+                // ignore
             }
         }
 

@@ -119,7 +119,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
 
         #endregion Properties (1)
 
-        #region Methods (3)
+        #region Methods (4)
 
         /// <summary>
         /// Creates a provider from a <see cref="TextWriter" /> instance.
@@ -193,13 +193,30 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
 
                 prio = " (" + prio + ")";
             }
-            
+
             writer.WriteLine(@"[{0:yyyy-MM-dd HH:mm:ss.fffffff K}] {1}{2} :: {3}""{4}""", msg.Time
                                                                                         , category, prio
-                                                                                        , tag                                              
+                                                                                        , tag
                                                                                         , msg.Message);
         }
 
-        #endregion Methods (3)
+        /// <summary>
+        /// Converts a delegate that only returns a <see cref="TextWriter" /> instance
+        /// to a <see cref="WriterProvider" /> instance.
+        /// </summary>
+        /// <param name="func">The input value.</param>
+        /// <returns>The output value.</returns>
+        /// <remarks>Returns <see langword="null" /> if <paramref name="func" /> is <see langword="null" />.</remarks>
+        public static WriterProvider ToProvider(Func<TextWriter> func)
+        {
+            if (func == null)
+            {
+                return null;
+            }
+
+            return (logger) => func();
+        }
+
+        #endregion Methods (4)
     }
 }

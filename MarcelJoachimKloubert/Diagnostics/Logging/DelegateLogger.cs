@@ -77,12 +77,32 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
 
         #endregion Delegates (1)
 
-        #region Methods (1)
+        #region Methods (2)
 
         /// <inheriteddoc />
         protected override void OnLog(ILogMessage msg, ref bool success)
         {
             _ACTION(this, msg, ref success);
+        }
+
+        /// <summary>
+        /// Converts an action that only requires a <see cref="ILogMessage" /> argument
+        /// to a <see cref="LogAction" /> instance.
+        /// </summary>
+        /// <param name="action">The input value.</param>
+        /// <returns>The output value.</returns>
+        /// <remarks>Returns <see langword="null" /> if <paramref name="action" /> is <see langword="null" />.</remarks>
+        public static LogAction ToAction(Action<ILogMessage> action)
+        {
+            if (action == null)
+            {
+                return null;
+            }
+
+            return delegate(DelegateLogger logger, ILogMessage msg, ref bool success)
+            {
+                action(msg);
+            };
         }
 
         #endregion Methods (1)

@@ -102,7 +102,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
 
         #endregion Properties (1)
 
-        #region Methods (2)
+        #region Methods (3)
 
         /// <summary>
         /// Creates a provider from a logger.
@@ -138,6 +138,23 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
             }
         }
 
-        #endregion Methods (2)
+        /// <summary>
+        /// Converts a delegate that only returns a <see cref="ILogger" /> instance
+        /// to a <see cref="LoggerProvider" /> instance.
+        /// </summary>
+        /// <param name="func">The input value.</param>
+        /// <returns>The output value.</returns>
+        /// <remarks>Returns <see langword="null" /> if <paramref name="func" /> is <see langword="null" />.</remarks>
+        public static LoggerProvider ToProvider(Func<ILogger> func)
+        {
+            if (func == null)
+            {
+                return null;
+            }
+
+            return (logger) => func();
+        }
+
+        #endregion Methods (3)
     }
 }
