@@ -51,20 +51,18 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         protected override void OnLog(ILogMessage msg, ref bool success)
         {
             var handler = MessageReceived;
-            if (handler != null)
+            if (handler == null)
             {
-                var e = new LogEventArgs(msg)
+                return;
+            }
+
+            var e = new LogEventArgs(msg)
                 {
                     Handled = true,
                 };
-                handler(this, e);
+            handler(this, e);
 
-                success = e.Handled;
-            }
-            else
-            {
-                success = false;
-            }
+            success = e.Handled;
         }
 
         #endregion Methods (1)
