@@ -68,7 +68,24 @@ namespace MarcelJoachimKloubert.Diagnostics
 
         #endregion Properties (1)
 
-        #region Methods (2)
+        #region Methods (3)
+
+        /// <summary>
+        /// Writes a log entry via the logger from <see cref="Logger.Current" />.
+        /// </summary>
+        /// <param name="msg">The message to write.</param>
+        /// <param name="category">The category.</param>
+        /// <param name="prio">The priority.</param>
+        /// <param name="tag">The optional tag.</param>
+        /// <returns>Message was written or not.</returns>
+        public static bool Log(object msg,
+                               LogCategory category = LogCategory.Info, LogPriority prio = LogPriority.None,
+                               string tag = null)
+        {
+            return Current.Log(msg: msg,
+                               category: category, prio: prio,
+                               tag: tag);
+        }
 
         /// <summary>
         /// Sets the value for <see cref="Logger.Current" /> property.
@@ -89,6 +106,6 @@ namespace MarcelJoachimKloubert.Diagnostics
             _provider = provider;
         }
 
-        #endregion Methods (2)
+        #endregion Methods (3)
     }
 }
