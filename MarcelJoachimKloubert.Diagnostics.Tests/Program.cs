@@ -28,81 +28,32 @@
  **********************************************************************************************************************/
 
 using System;
+using MarcelJoachimKloubert.Diagnostics.Logging;
 
-namespace MarcelJoachimKloubert.Diagnostics.Logging
+namespace MarcelJoachimKloubert.Diagnostics.Tests
 {
-    /// <summary>
-    /// A logger that uses a delegate to log.
-    /// </summary>
-    public class DelegateLogger : LoggerBase
+    internal static class Program
     {
-        #region Fields (1)
+        #region Methods (1)
 
-        private readonly LogAction _ACTION;
-
-        #endregion Fields (1)
-
-        #region Constructors (1)
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoggerBase" /> class.
-        /// </summary>
-        /// <param name="action">The action to use.</param>
-        /// <param name="syncRoot">The custom object for thread safe operations.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="action" /> is <see langword="null" />.
-        /// </exception>
-        public DelegateLogger(LogAction action, object syncRoot = null)
-            : base(syncRoot: syncRoot)
+        private static void Main()
         {
-            if (action == null)
+            try
             {
-                throw new ArgumentNullException("action");
+                var logger = new TextLogger(Console.Out);
+
+                logger.Log("Hello, World!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[ERROR]: {0}", ex.GetBaseException());
             }
 
-            _ACTION = action;
-        }
+            Console.WriteLine();
+            Console.WriteLine();
 
-        #endregion Constructors (1)
-
-        #region Delegates (1)
-
-        /// <summary>
-        /// Describes a log action.
-        /// </summary>
-        /// <param name="logger">The base logger.</param>
-        /// <param name="msg">The log message.</param>
-        /// <param name="success">The variable that stores if operation was successful or not.</param>
-        public delegate void LogAction(DelegateLogger logger, ILogMessage msg, ref bool success);
-
-        #endregion Delegates (1)
-
-        #region Methods (2)
-
-        /// <inheriteddoc />
-        protected override void OnLog(ILogMessage msg, ref bool success)
-        {
-            _ACTION(this, msg, ref success);
-        }
-
-        /// <summary>
-        /// Converts an action that only requires a <see cref="ILogMessage" /> argument
-        /// to a <see cref="LogAction" /> instance.
-        /// </summary>
-        /// <param name="action">The input value.</param>
-        /// <returns>The output value.</returns>
-        /// <remarks>Returns <see langword="null" /> if <paramref name="action" /> is <see langword="null" />.</remarks>
-        public static LogAction ToAction(Action<ILogMessage> action)
-        {
-            if (action == null)
-            {
-                return null;
-            }
-
-            return delegate(DelegateLogger logger, ILogMessage msg, ref bool success)
-            {
-                action(msg);
-            };
+            Console.WriteLine("===== ENTER =====");
+            Console.ReadLine();
         }
 
         #endregion Methods (1)
