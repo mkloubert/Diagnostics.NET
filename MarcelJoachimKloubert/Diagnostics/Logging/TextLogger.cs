@@ -170,34 +170,10 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
 
             writer.WriteLine();
 
-            var tag = msg.Tag;
-            if (!string.IsNullOrWhiteSpace(tag))
-            {
-                tag = "[" + tag.Trim() + "] ";
-            }
+            var sb = new StringBuilder();
+            CreateString(msg, sb);
 
-            var category = msg.Category.ToString();
-            if (msg.Category < LogCategory.Notice)
-            {
-                category = category.ToUpper();
-            }
-
-            var prio = "";
-            if (msg.Priority != LogPriority.None)
-            {
-                prio = msg.Priority.ToString();
-                if (msg.Priority < LogPriority.Medium)
-                {
-                    prio = prio.ToUpper();
-                }
-
-                prio = " (" + prio + ")";
-            }
-
-            writer.WriteLine(@"[{0:yyyy-MM-dd HH:mm:ss.fffffff K}] {1}{2} :: {3}""{4}""", msg.Time
-                                                                                        , category, prio
-                                                                                        , tag
-                                                                                        , msg.Message);
+            writer.WriteLine(sb.ToString());
         }
 
         /// <summary>
