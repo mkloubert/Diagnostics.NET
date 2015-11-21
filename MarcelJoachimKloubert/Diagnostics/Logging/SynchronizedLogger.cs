@@ -34,33 +34,33 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
     /// <summary>
     /// A thread safe logger.
     /// </summary>
-    public class SynchornizedLogger : LoggerWrapper
+    public class SynchronizedLogger : LoggerWrapper
     {
         #region Constructors (2)
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SynchornizedLogger" /> class.
+        /// Initializes a new instance of the <see cref="SynchronizedLogger" /> class.
         /// </summary>
         /// <param name="baseLogger">The value for the <see cref="LoggerWrapper.BaseLogger" /> property.</param>
         /// <param name="syncRoot">The custom object for thread safe operations.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="baseLogger" /> is <see langword="null" />.
         /// </exception>
-        public SynchornizedLogger(ILogger baseLogger, object syncRoot = null)
+        public SynchronizedLogger(ILogger baseLogger, object syncRoot = null)
             : base(baseLogger: baseLogger,
                    syncRoot: syncRoot)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SynchornizedLogger" /> class.
+        /// Initializes a new instance of the <see cref="SynchronizedLogger" /> class.
         /// </summary>
         /// <param name="provider">The function that provides the value for the <see cref="LoggerWrapper.BaseLogger" /> property.</param>
         /// <param name="syncRoot">The custom object for thread safe operations.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="provider" /> is <see langword="null" />.
         /// </exception>
-        public SynchornizedLogger(LoggerProvider provider, object syncRoot = null)
+        public SynchronizedLogger(LoggerProvider provider, object syncRoot = null)
             : base(provider: provider,
                    syncRoot: syncRoot)
         {
