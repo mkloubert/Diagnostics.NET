@@ -27,82 +27,25 @@
  *                                                                                                                    *
  **********************************************************************************************************************/
 
-using System;
+using System.Diagnostics;
+using System.Text;
 
 namespace MarcelJoachimKloubert.Diagnostics.Logging
 {
     /// <summary>
-    /// A logger that uses a delegate to log.
+    /// Logger that uses <see cref="Debug" /> class to log.
     /// </summary>
-    public class DelegateLogger : LoggerBase
+    public class DebugLogger : LoggerBase
     {
-        #region Fields (1)
-
-        private readonly LogAction _ACTION;
-
-        #endregion Fields (1)
-
-        #region Constructors (1)
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoggerBase" /> class.
-        /// </summary>
-        /// <param name="action">The action to use.</param>
-        /// <param name="syncRoot">The custom object for thread safe operations.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="action" /> is <see langword="null" />.
-        /// </exception>
-        public DelegateLogger(LogAction action, object syncRoot = null)
-            : base(syncRoot: syncRoot)
-        {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-
-            _ACTION = action;
-        }
-
-        #endregion Constructors (1)
-
-        #region Delegates (1)
-
-        /// <summary>
-        /// Describes a log action.
-        /// </summary>
-        /// <param name="logger">The base logger.</param>
-        /// <param name="msg">The log message.</param>
-        /// <param name="success">The variable that stores if operation was successful or not.</param>
-        public delegate void LogAction(DelegateLogger logger, ILogMessage msg, ref bool success);
-
-        #endregion Delegates (1)
-
-        #region Methods (2)
+        #region Methods (1)
 
         /// <inheriteddoc />
         protected override void OnLog(ILogMessage msg, ref bool success)
         {
-            _ACTION(this, msg, ref success);
-        }
+            var sb = new StringBuilder();
+            CreateString(msg, sb);
 
-        /// <summary>
-        /// Converts an action that only requires a <see cref="ILogMessage" /> argument
-        /// to a <see cref="LogAction" /> instance.
-        /// </summary>
-        /// <param name="action">The input value.</param>
-        /// <returns>The output value.</returns>
-        /// <remarks>Returns <see langword="null" /> if <paramref name="action" /> is <see langword="null" />.</remarks>
-        public static LogAction ToAction(Action<ILogMessage> action)
-        {
-            if (action == null)
-            {
-                return null;
-            }
-
-            return delegate(DelegateLogger logger, ILogMessage msg, ref bool success)
-            {
-                action(msg);
-            };
+            Debug.WriteLine(sb.ToString());
         }
 
         #endregion Methods (1)
