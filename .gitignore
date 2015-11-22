@@ -4,3 +4,5 @@
 /.vs/MarcelJoachimKloubert/v14/.suo
 /MarcelJoachimKloubert/MarcelJoachimKloubert.csproj.user
 /MarcelJoachimKloubert/project.lock.json
+/MarcelJoachimKloubert.Diagnostics.Tests/obj
+/MarcelJoachimKloubert.Diagnostics.Tests/bin

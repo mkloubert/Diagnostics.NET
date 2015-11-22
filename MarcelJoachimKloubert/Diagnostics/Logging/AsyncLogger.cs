@@ -75,15 +75,15 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         /// <param name="prio">The priority.</param>
         /// <param name="tag">The tag.</param>
         /// <returns>The started task.</returns>
-        public Task<bool> LogAsync(object msg,
-                                   LogCategory category = LogCategory.Info, LogPriority prio = LogPriority.None,
-                                   string tag = null)
+        public async Task<bool> LogAsync(object msg,
+                                         LogCategory category = LogCategory.Info, LogPriority prio = LogPriority.None,
+                                         string tag = null)
         {
             var logMsg = CreateMessage(msg: msg,
                                        category: category, prio: prio,
                                        tag: tag);
 
-            return LogAsync(logMsg: logMsg);
+            return await LogAsync(logMsg: logMsg);
         }
 
         private Task<bool> LogAsync(ILogMessage logMsg)

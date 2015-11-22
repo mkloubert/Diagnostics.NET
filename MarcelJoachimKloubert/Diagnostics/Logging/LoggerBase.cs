@@ -38,12 +38,11 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
     /// </summary>
     public abstract partial class LoggerBase : ILogger
     {
-        #region Fields (3)
+        #region Fields (1)
 
         private readonly ICollection<MessageFilter> _FILTERS;
-        private readonly object _SYNC_ROOT;
 
-        #endregion Fields (3)
+        #endregion Fields (1)
 
         #region Constructors (1)
 
@@ -53,7 +52,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         /// <param name="syncRoot">The custom object for thread safe operations.</param>
         protected LoggerBase(object syncRoot = null)
         {
-            _SYNC_ROOT = syncRoot ?? new object();
+            SyncRoot = syncRoot ?? new object();
             _FILTERS = CreateFilterStorage() ?? new List<MessageFilter>();
         }
 
@@ -139,13 +138,13 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
                                                     string tag)
         {
             return new LogMessage()
-                {
-                    Category = category,
-                    Message = DBNull.Value.Equals(msg) ? null : msg,
-                    Priority = prio,
-                    Tag = string.IsNullOrWhiteSpace(tag) ? null : tag.ToUpper().Trim(),
-                    Time = DateTimeOffset.Now,
-                };
+	            {
+	                Category = category,
+	                Message = DBNull.Value.Equals(msg) ? null : msg,
+	                Priority = prio,
+	                Tag = string.IsNullOrWhiteSpace(tag) ? null : tag.ToUpper().Trim(),
+	                Time = DateTimeOffset.Now,
+	            };
         }
 
         /// <summary>
@@ -228,10 +227,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         /// <summary>
         /// Gets the object for thread safe operations.
         /// </summary>
-        public virtual object SyncRoot
-        {
-            get { return _SYNC_ROOT; }
-        }
+        public virtual object SyncRoot { get; }
 
         /// <summary>
         /// Gets or sets an object that should be linked with that instance.
