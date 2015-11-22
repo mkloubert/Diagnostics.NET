@@ -65,28 +65,59 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
 
         #endregion Constructors (2)
 
-        #region Methods (2)
+        #region Methods (4)
+
+        /// <summary>
+        /// Async operation of <see cref="LoggerBase.Log(object, LogCategory, LogPriority, string)" /> method.
+        /// </summary>
+        /// <param name="msg">The message.</param>
+        /// <param name="category">The category.</param>
+        /// <param name="prio">The priority.</param>
+        /// <param name="tag">The tag.</param>
+        /// <returns>The started task.</returns>
+        public Task<bool> LogAsync(object msg,
+                                   LogCategory category = LogCategory.Info, LogPriority prio = LogPriority.None,
+                                   string tag = null)
+        {
+            var logMsg = CreateMessage(msg: msg,
+                                       category: category, prio: prio,
+                                       tag: tag);
+
+            return LogAsync(logMsg: logMsg);
+        }
+
+        private Task<bool> LogAsync(ILogMessage logMsg)
+        {
+            return Task.Factory.StartNew(function: (state) =>
+                {
+                    var args = (object[])state;
+
+                    return ((AsyncLogger)args[0]).OnLogTask(logMsg: (ILogMessage)args[1]);
+                }, state: new object[] { this, logMsg });
+        }
 
         /// <inheriteddoc />
         protected sealed override void OnLog(ILogMessage msg, ref bool success)
         {
-            Task.Factory.StartNew(OnLogTask,
-                                  state: msg);
+            LogAsync(logMsg: msg);
         }
 
-        private void OnLogTask(object state)
+        private bool OnLogTask(ILogMessage logMsg)
         {
+            bool result;
             try
             {
-                var success = true;
-                base.OnLog((ILogMessage)state, ref success);
+                result = true;
+                base.OnLog(logMsg, ref result);
             }
             catch
             {
-                // ignore
+                result = false;
             }
+
+            return result;
         }
 
-        #endregion Methods (2)
+        #endregion Methods (4)
     }
 }

@@ -127,6 +127,28 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         }
 
         /// <summary>
+        /// Creates a log message object.
+        /// </summary>
+        /// <param name="msg">The message value.</param>
+        /// <param name="category">The category.</param>
+        /// <param name="prio">The priority.</param>
+        /// <param name="tag">The tag.</param>
+        /// <returns>The created object.</returns>
+        protected virtual ILogMessage CreateMessage(object msg,
+                                                    LogCategory category, LogPriority prio,
+                                                    string tag)
+        {
+            return new LogMessage()
+                {
+                    Category = category,
+                    Message = msg,
+                    Priority = prio,
+                    Tag = string.IsNullOrWhiteSpace(tag) ? null : tag.ToUpper().Trim(),
+                    Time = DateTimeOffset.Now,
+                };
+        }
+
+        /// <summary>
         /// Creates a common log string.
         /// </summary>
         /// <param name="msg">The message with the data.</param>
@@ -170,16 +192,9 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         {
             try
             {
-                var now = DateTimeOffset.Now;
-
-                var logMsg = new LogMessage()
-                    {
-                        Category = category,
-                        Message = msg,
-                        Priority = prio,
-                        Tag = string.IsNullOrWhiteSpace(tag) ? null : tag.ToUpper().Trim(),
-                        Time = now,
-                    };
+                var logMsg = CreateMessage(msg: msg,
+                                           category: category, prio: prio,
+                                           tag: tag);
 
                 var result = true;
 
