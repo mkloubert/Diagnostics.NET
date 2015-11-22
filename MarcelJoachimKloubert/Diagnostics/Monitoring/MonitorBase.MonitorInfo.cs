@@ -27,36 +27,59 @@
  *                                                                                                                    *
  **********************************************************************************************************************/
 
-namespace MarcelJoachimKloubert.Monitoring
+using System;
+
+namespace MarcelJoachimKloubert.Diagnostics.Monitoring
 {
-    /// <summary>
-    /// List of monitor states.
-    /// </summary>
-    public enum MonitorState
+    partial class MonitorBase
     {
         /// <summary>
-        /// Gray
+        /// Simple implementation of the <see cref="IMonitorInfo" /> interface.
         /// </summary>
-        None = 0,
+        public class MonitorInfo : IMonitorInfo
+        {
+            #region Constructors (1)
 
-        /// <summary>
-        /// Green
-        /// </summary>
-        OK = 1,
+            /// <summary>
+            /// Initializes a new instance of the <see cref="MonitorInfo" /> class.
+            /// </summary>
+            /// <param name="monitor">The value for the <see cref="MonitorInfo.Monitor" /> property.</param>
+            /// <exception cref="ArgumentNullException">
+            /// <paramref name="monitor" /> is <see langword="null" />.
+            /// </exception>
+            public MonitorInfo(IMonitor monitor)
+            {
+                if (monitor == null)
+                {
+                    throw new ArgumentNullException("monitor");
+                }
 
-        /// <summary>
-        /// Yellow
-        /// </summary>
-        Warning = 2,
+                Monitor = monitor;
+            }
 
-        /// <summary>
-        /// Red
-        /// </summary>
-        Error = 3,
+            #endregion Constructors (1)
 
-        /// <summary>
-        /// Getting information failed.
-        /// </summary>
-        Exception = 4,
+            #region Properties (6)
+
+            /// <inheriteddoc />
+            public virtual string Description { get; set; }
+
+            /// <inheriteddoc />
+            public virtual DateTimeOffset LastUpdate { get; set; }
+
+            /// <inheriteddoc />
+            public IMonitor Monitor { get; private set; }
+
+            /// <inheriteddoc />
+            public MonitorState State { get; set; }
+
+            /// <inheriteddoc />
+            public virtual string Summary { get; set; }
+
+            /// <inheriteddoc />
+            public object Value { get; set; }
+
+            #endregion Properties (6)
+        }
     }
 }

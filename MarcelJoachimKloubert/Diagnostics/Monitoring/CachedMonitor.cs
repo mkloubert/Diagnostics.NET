@@ -31,7 +31,7 @@ using System;
 using System.Globalization;
 using System.Text;
 
-namespace MarcelJoachimKloubert.Monitoring
+namespace MarcelJoachimKloubert.Diagnostics.Monitoring
 {
     /// <summary>
     /// A cached monitor.

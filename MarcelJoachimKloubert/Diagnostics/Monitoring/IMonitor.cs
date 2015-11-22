@@ -29,75 +29,31 @@
 
 using System;
 using System.Globalization;
-using System.Text;
 
-namespace MarcelJoachimKloubert.Monitoring
+namespace MarcelJoachimKloubert.Diagnostics.Monitoring
 {
     /// <summary>
-    /// Wraps another monitor.
+    /// Describes a monitor.
     /// </summary>
-    public class MonitorWrapper : MonitorBase
+    public interface IMonitor
     {
-        #region Constructors (1)
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MonitorWrapper" /> class.
-        /// </summary>
-        /// <param name="baseMonitor">The monitor to wrap.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="baseMonitor" /> is <see langword="null" />.
-        /// </exception>
-        public MonitorWrapper(IMonitor baseMonitor)
-        {
-            if (baseMonitor == null)
-            {
-                throw new ArgumentNullException(nameof(baseMonitor));
-            }
-
-            BaseMonitor = baseMonitor;
-        }
-
-        #endregion Constructors (1)
-
         #region Events (1)
 
-        /// <inheriteddoc />
-        public override event EventHandler MonitorUpdated
-        {
-            add { BaseMonitor.MonitorUpdated += value; }
-
-            remove { BaseMonitor.MonitorUpdated -= value; }
-        }
+        /// <summary>
+        /// Is invoked when the monitor has been updated.
+        /// </summary>
+        event EventHandler MonitorUpdated;
 
         #endregion Events (1)
 
-        #region Properties (1)
-
-        /// <summary>
-        /// Gets the wrapped monitor.
-        /// </summary>
-        public IMonitor BaseMonitor { get; private set; }
-
-        #endregion Properties (1)
-
         #region Methods (1)
 
-        /// <inheriteddoc />
-        protected override void OnGetInfo(CultureInfo lang,
-                                          ref MonitorState state, StringBuilder summary, StringBuilder desc, ref object value, ref DateTimeOffset lastUpdate)
-        {
-            var info = BaseMonitor.GetInfo(lang);
-            if (info == null)
-            {
-                return;
-            }
-
-            state = info.State;
-            summary.Append(info.Summary);
-            desc.Append(info.Description);
-            value = info.Value;
-            lastUpdate = info.LastUpdate;
-        }
+        /// <summary>
+        /// Returns the current state of the monitor.
+        /// </summary>
+        /// <param name="lang">The language for the state messages. If not supported the default language is used.</param>
+        /// <returns>The state.</returns>
+        IMonitorInfo GetInfo(CultureInfo lang = null);
 
         #endregion Methods (1)
     }

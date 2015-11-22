@@ -29,7 +29,7 @@
 
 using System;
 
-namespace MarcelJoachimKloubert.Monitoring
+namespace MarcelJoachimKloubert.Diagnostics.Monitoring
 {
     /// <summary>
     /// Describes current state information of a monitor.
