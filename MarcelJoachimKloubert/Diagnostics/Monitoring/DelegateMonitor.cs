@@ -28,46 +28,70 @@
  **********************************************************************************************************************/
 
 using System;
+using System.Globalization;
+using System.Text;
 
-namespace MarcelJoachimKloubert.Monitoring
+namespace MarcelJoachimKloubert.Diagnostics.Monitoring
 {
     /// <summary>
-    /// Describes current state information of a monitor.
+    /// A logger that uses a delegate.
     /// </summary>
-    public interface IMonitorInfo
+    public class DelegateMonitor : MonitorBase
     {
-        #region Properties (6)
+        #region Fields (1)
+
+        private readonly StateProvider _PROVIDER;
+
+        #endregion Fields (1)
+
+        #region Constructors (1)
 
         /// <summary>
-        /// Gets the (long) description.
+        /// Initializes a new instance of the <see cref="DelegateMonitor" /> class.
         /// </summary>
-        string Description { get; }
+        /// <param name="provider">The provider to use.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="provider" /> is <see langword="null" />.
+        /// </exception>
+        public DelegateMonitor(StateProvider provider)
+        {
+            if (provider == null)
+            {
+                throw new ArgumentNullException("provider");
+            }
+
+            _PROVIDER = provider;
+        }
+
+        #endregion Constructors (1)
+
+        #region Delegates (1)
 
         /// <summary>
-        /// Gets the last update time.
+        /// Provides a monitor state object.
         /// </summary>
-        DateTimeOffset LastUpdate { get; }
+        /// <param name="monitor">The parent monitor.</param>
+        /// <param name="lang">The language to use.</param>
+        /// <param name="state">The variable where to write the state to.</param>
+        /// <param name="summary">The <see cref="StringBuilder" /> for building the summary.</param>
+        /// <param name="desc">The <see cref="StringBuilder" /> for building the description.</param>
+        /// <param name="value">The variable where to write the value to.</param>
+        /// <param name="lastUpdate">The variable where to write the last update timestamp to.</param>
+        public delegate void StateProvider(DelegateMonitor monitor, CultureInfo lang,
+                                           ref MonitorState state, StringBuilder summary, StringBuilder desc, ref object value, ref DateTimeOffset lastUpdate);
 
-        /// <summary>
-        /// Gets the monitor the state belongs to.
-        /// </summary>
-        IMonitor Monitor { get; }
+        #endregion Delegates (1)
 
-        /// <summary>
-        /// Gets the state.
-        /// </summary>
-        MonitorState State { get; }
+        #region Methods (1)
 
-        /// <summary>
-        /// Gets the short description / summary.
-        /// </summary>
-        string Summary { get; }
+        /// <inheriteddoc />
+        protected override void OnGetInfo(CultureInfo lang,
+                                          ref MonitorState state, StringBuilder summary, StringBuilder desc, ref object value, ref DateTimeOffset lastUpdate)
+        {
+            _PROVIDER(this, lang,
+                      ref state, summary, desc, ref value, ref lastUpdate);
+        }
 
-        /// <summary>
-        /// Gets the value that represents the information.
-        /// </summary>
-        object Value { get; }
-
-        #endregion Properties (6)
+        #endregion Methods (1)
     }
 }
