@@ -31,133 +31,74 @@ using System;
 using System.Globalization;
 using System.Text;
 
-namespace MarcelJoachimKloubert.Monitoring
+namespace MarcelJoachimKloubert.Diagnostics.Monitoring
 {
     /// <summary>
-    /// A cached monitor.
+    /// Wraps another monitor.
     /// </summary>
-    public class CachedMonitor : MonitorWrapper
+    public class MonitorWrapper : MonitorBase
     {
-        #region Fields (4)
-
-        private IMonitorInfo _lastInfo;
-        private DateTimeOffset? _lastUpdate;
-        private readonly TimeProvider _TIME_PROVIDER;
-        private readonly TimeSpan _UPDATE_INTERVAL;
-
-        #endregion Fields (4)
-
         #region Constructors (1)
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CachedMonitor" /> class.
+        /// Initializes a new instance of the <see cref="MonitorWrapper" /> class.
         /// </summary>
         /// <param name="baseMonitor">The monitor to wrap.</param>
-        /// <param name="sec">The update interval in seconds.</param>
-        /// <param name="timeProvider">The custom time provider to use.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="baseMonitor" /> is <see langword="null" />.
         /// </exception>
-        public CachedMonitor(IMonitor baseMonitor, double sec, TimeProvider timeProvider = null)
-            : this(baseMonitor: baseMonitor,
-                   updateInterval: TimeSpan.FromSeconds(sec),
-                   timeProvider: timeProvider)
+        public MonitorWrapper(IMonitor baseMonitor)
         {
-        }
+            if (baseMonitor == null)
+            {
+                throw new ArgumentNullException("baseMonitor");
+            }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CachedMonitor" /> class.
-        /// </summary>
-        /// <param name="baseMonitor">The monitor to wrap.</param>
-        /// <param name="updateInterval">The update interval.</param>
-        /// <param name="timeProvider">The custom time provider to use.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="baseMonitor" /> is <see langword="null" />.
-        /// </exception>
-        public CachedMonitor(IMonitor baseMonitor, TimeSpan updateInterval, TimeProvider timeProvider = null)
-            : base(baseMonitor: baseMonitor)
-        {
-            _TIME_PROVIDER = timeProvider ?? GetNow;
-            _UPDATE_INTERVAL = updateInterval;
+            BaseMonitor = baseMonitor;
         }
 
         #endregion Constructors (1)
 
-        #region Delegates (1)
+        #region Events (1)
+
+        /// <inheriteddoc />
+        public override event EventHandler MonitorUpdated
+        {
+            add { BaseMonitor.MonitorUpdated += value; }
+
+            remove { BaseMonitor.MonitorUpdated -= value; }
+        }
+
+        #endregion Events (1)
+
+        #region Properties (1)
 
         /// <summary>
-        /// Provides the current time.
+        /// Gets the wrapped monitor.
         /// </summary>
-        /// <returns>The current time.</returns>
-        public delegate DateTimeOffset TimeProvider(CachedMonitor monitor);
+        public IMonitor BaseMonitor { get; private set; }
 
-        #endregion Delegates (1)
+        #endregion Properties (1)
 
-        #region Methods (3)
-
-        private static DateTimeOffset GetNow(CachedMonitor monitor)
-        {
-            return DateTimeOffset.Now;
-        }
+        #region Methods (1)
 
         /// <inheriteddoc />
         protected override void OnGetInfo(CultureInfo lang,
                                           ref MonitorState state, StringBuilder summary, StringBuilder desc, ref object value, ref DateTimeOffset lastUpdate)
         {
-            lock (SyncRoot)
+            var info = BaseMonitor.GetInfo(lang);
+            if (info == null)
             {
-                var now = _TIME_PROVIDER(this);
-
-                var lastMonitorUpdate = _lastUpdate;
-                var doUpdate = true;
-                if (lastMonitorUpdate.HasValue)
-                {
-                    doUpdate = false;
-
-                    var interval = now - lastMonitorUpdate.Value;
-                    if (interval >= _UPDATE_INTERVAL ||
-                        _UPDATE_INTERVAL <= TimeSpan.Zero)
-                    {
-                        doUpdate = true;
-                    }
-                }
-
-                IMonitorInfo info;
-                if (doUpdate)
-                {
-                    _lastInfo = info = BaseMonitor.GetInfo(lang);
-                    _lastUpdate = now;
-                }
-                else
-                {
-                    info = _lastInfo;
-                }
-
-                if (info == null)
-                {
-                    return;
-                }
-
-                state = info.State;
-                summary.Append(info.Summary);
-                desc.Append(info.Description);
-                value = info.Value;
-                lastUpdate = info.LastUpdate;
+                return;
             }
+
+            state = info.State;
+            summary.Append(info.Summary);
+            desc.Append(info.Description);
+            value = info.Value;
+            lastUpdate = info.LastUpdate;
         }
 
-        /// <summary>
-        /// Resets the state.
-        /// </summary>
-        public void Reset()
-        {
-            lock (SyncRoot)
-            {
-                _lastUpdate = null;
-                _lastInfo = null;
-            }
-        }
-
-        #endregion Methods (3)
+        #endregion Methods (1)
     }
 }

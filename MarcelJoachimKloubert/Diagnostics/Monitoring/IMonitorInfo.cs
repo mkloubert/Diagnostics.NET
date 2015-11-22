@@ -28,33 +28,46 @@
  **********************************************************************************************************************/
 
 using System;
-using System.Globalization;
 
-namespace MarcelJoachimKloubert.Monitoring
+namespace MarcelJoachimKloubert.Diagnostics.Monitoring
 {
     /// <summary>
-    /// Describes a monitor.
+    /// Describes current state information of a monitor.
     /// </summary>
-    public interface IMonitor
+    public interface IMonitorInfo
     {
-        #region Events (1)
+        #region Properties (6)
 
         /// <summary>
-        /// Is invoked when the monitor has been updated.
+        /// Gets the (long) description.
         /// </summary>
-        event EventHandler MonitorUpdated;
-
-        #endregion Events (1)
-
-        #region Methods (1)
+        string Description { get; }
 
         /// <summary>
-        /// Returns the current state of the monitor.
+        /// Gets the last update time.
         /// </summary>
-        /// <param name="lang">The language for the state messages. If not supported the default language is used.</param>
-        /// <returns>The state.</returns>
-        IMonitorInfo GetInfo(CultureInfo lang = null);
+        DateTimeOffset LastUpdate { get; }
 
-        #endregion Methods (1)
+        /// <summary>
+        /// Gets the monitor the state belongs to.
+        /// </summary>
+        IMonitor Monitor { get; }
+
+        /// <summary>
+        /// Gets the state.
+        /// </summary>
+        MonitorState State { get; }
+
+        /// <summary>
+        /// Gets the short description / summary.
+        /// </summary>
+        string Summary { get; }
+
+        /// <summary>
+        /// Gets the value that represents the information.
+        /// </summary>
+        object Value { get; }
+
+        #endregion Properties (6)
     }
 }

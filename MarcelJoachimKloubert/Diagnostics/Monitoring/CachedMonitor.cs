@@ -31,122 +31,131 @@ using System;
 using System.Globalization;
 using System.Text;
 
-namespace MarcelJoachimKloubert.Monitoring
+namespace MarcelJoachimKloubert.Diagnostics.Monitoring
 {
     /// <summary>
-    /// A basic monitor.
+    /// A cached monitor.
     /// </summary>
-    public abstract partial class MonitorBase : IMonitor
+    public class CachedMonitor : MonitorWrapper
     {
-        #region Fields (1)
+        #region Fields (4)
 
-        private readonly object _SYNC_ROOT;
+        private IMonitorInfo _lastInfo;
+        private DateTimeOffset? _lastUpdate;
+        private readonly TimeProvider _TIME_PROVIDER;
+        private readonly TimeSpan _UPDATE_INTERVAL;
 
-        #endregion Fields (1)
+        #endregion Fields (4)
 
         #region Constructors (1)
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MonitorBase" /> class.
+        /// Initializes a new instance of the <see cref="CachedMonitor" /> class.
         /// </summary>
-        /// <param name="syncRoot"></param>
-        protected MonitorBase(object syncRoot = null)
+        /// <param name="baseMonitor">The monitor to wrap.</param>
+        /// <param name="sec">The update interval in seconds.</param>
+        /// <param name="timeProvider">The custom time provider to use.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="baseMonitor" /> is <see langword="null" />.
+        /// </exception>
+        public CachedMonitor(IMonitor baseMonitor, double sec, TimeProvider timeProvider = null)
+            : this(baseMonitor: baseMonitor,
+                   updateInterval: TimeSpan.FromSeconds(sec),
+                   timeProvider: timeProvider)
         {
-            _SYNC_ROOT = syncRoot ?? new object();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachedMonitor" /> class.
+        /// </summary>
+        /// <param name="baseMonitor">The monitor to wrap.</param>
+        /// <param name="updateInterval">The update interval.</param>
+        /// <param name="timeProvider">The custom time provider to use.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="baseMonitor" /> is <see langword="null" />.
+        /// </exception>
+        public CachedMonitor(IMonitor baseMonitor, TimeSpan updateInterval, TimeProvider timeProvider = null)
+            : base(baseMonitor: baseMonitor)
+        {
+            _TIME_PROVIDER = timeProvider ?? GetNow;
+            _UPDATE_INTERVAL = updateInterval;
         }
 
         #endregion Constructors (1)
 
-        #region Events (1)
-
-        /// <inheriteddoc />
-        public virtual event EventHandler MonitorUpdated;
-
-        #endregion Events (1)
-
-        #region Properties (2)
+        #region Delegates (1)
 
         /// <summary>
-        /// Gets or sets and object that should be linked with that instance.
+        /// Provides the current time.
         /// </summary>
-        public virtual object Tag { get; set; }
+        /// <returns>The current time.</returns>
+        public delegate DateTimeOffset TimeProvider(CachedMonitor monitor);
 
-        /// <summary>
-        /// Gets the object for thread safe operations.
-        /// </summary>
-        public object SyncRoot
-        {
-            get { return _SYNC_ROOT; }
-        }
-
-        #endregion Properties (2)
+        #endregion Delegates (1)
 
         #region Methods (3)
 
-        /// <inheriteddoc />
-        public IMonitorInfo GetInfo(CultureInfo lang = null)
+        private static DateTimeOffset GetNow(CachedMonitor monitor)
         {
-            try
+            return DateTimeOffset.Now;
+        }
+
+        /// <inheriteddoc />
+        protected override void OnGetInfo(CultureInfo lang,
+                                          ref MonitorState state, StringBuilder summary, StringBuilder desc, ref object value, ref DateTimeOffset lastUpdate)
+        {
+            lock (SyncRoot)
             {
-                var state = MonitorState.None;
-                var summary = new StringBuilder();
-                var desc = new StringBuilder();
-                object value = null;
-                var lastUpdate = DateTimeOffset.Now;
+                var now = _TIME_PROVIDER(this);
 
-                this.OnGetInfo(lang ?? CultureInfo.CurrentCulture,
-                               ref state, summary, desc, ref value, ref lastUpdate);
-
-                return new MonitorInfo(this)
+                var lastMonitorUpdate = _lastUpdate;
+                var doUpdate = true;
+                if (lastMonitorUpdate.HasValue)
                 {
-                    Description = desc.Length < 1 ? null : desc.ToString(),
-                    LastUpdate = lastUpdate,
-                    State = state,
-                    Summary = summary.Length < 1 ? null : summary.ToString(),
-                    Value = value,
-                };
-            }
-            catch (Exception ex)
-            {
-                var baseEx = ex.GetBaseException();
+                    doUpdate = false;
 
-                return new MonitorInfo(this)
+                    var interval = now - lastMonitorUpdate.Value;
+                    if (interval >= _UPDATE_INTERVAL ||
+                        _UPDATE_INTERVAL <= TimeSpan.Zero)
+                    {
+                        doUpdate = true;
+                    }
+                }
+
+                IMonitorInfo info;
+                if (doUpdate)
                 {
-                    Description = baseEx.ToString(),
-                    LastUpdate = DateTimeOffset.Now,
-                    State = MonitorState.Exception,
-                    Summary = baseEx.GetType().FullName,
-                    Value = ex,
-                };
+                    _lastInfo = info = BaseMonitor.GetInfo(lang);
+                    _lastUpdate = now;
+                }
+                else
+                {
+                    info = _lastInfo;
+                }
+
+                if (info == null)
+                {
+                    return;
+                }
+
+                state = info.State;
+                summary.Append(info.Summary);
+                desc.Append(info.Description);
+                value = info.Value;
+                lastUpdate = info.LastUpdate;
             }
         }
 
         /// <summary>
-        /// The logic for the <see cref="MonitorBase.GetInfo(CultureInfo)" /> method.
+        /// Resets the state.
         /// </summary>
-        /// <param name="lang">The language to use.</param>
-        /// <param name="state">The variable where to write the state to.</param>
-        /// <param name="summary">The <see cref="StringBuilder" /> for building the summary.</param>
-        /// <param name="desc">The <see cref="StringBuilder" /> for building the description.</param>
-        /// <param name="value">The variable where to write the value to.</param>
-        /// <param name="lastUpdate">The variable where to write the last update timestamp to.</param>
-        protected abstract void OnGetInfo(CultureInfo lang,
-                                          ref MonitorState state, StringBuilder summary, StringBuilder desc, ref object value, ref DateTimeOffset lastUpdate);
-
-        /// <summary>
-        /// Raises the <see cref="MonitorBase.MonitorUpdated" /> event.
-        /// </summary>
-        /// <returns>Event was raised or not.</returns>
-        public bool RaiseMonitorUpdated()
+        public void Reset()
         {
-            var handler = MonitorUpdated;
-            if (handler == null)
+            lock (SyncRoot)
             {
-                return false;
+                _lastUpdate = null;
+                _lastInfo = null;
             }
-
-            handler(this, EventArgs.Empty);
-            return true;
         }
 
         #endregion Methods (3)
