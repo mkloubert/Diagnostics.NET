@@ -85,8 +85,8 @@ namespace MarcelJoachimKloubert.Diagnostics.Monitoring
                 object value = null;
                 var lastUpdate = DateTimeOffset.Now;
 
-                this.OnGetInfo(lang ?? CultureInfo.CurrentCulture,
-                               ref state, summary, desc, ref value, ref lastUpdate);
+                OnGetInfo(lang ?? CultureInfo.CurrentCulture,
+                          ref state, summary, desc, ref value, ref lastUpdate);
 
                 return new MonitorInfo(this)
                 {
