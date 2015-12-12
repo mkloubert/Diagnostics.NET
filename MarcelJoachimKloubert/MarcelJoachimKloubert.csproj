@@ -127,7 +127,9 @@
     <Compile Include="Diagnostics\Logging\LogCategory.cs" />
     <Compile Include="Diagnostics\Logging\LogEventArgs.cs" />
     <Compile Include="Diagnostics\Logging\LoggerBase.cs" />
-    <Compile Include="Diagnostics\Logging\LoggerBase.LogMessage.cs" />
+    <Compile Include="Diagnostics\Logging\LoggerBase.LogMessage.cs">
+      <DependentUpon>LoggerBase.cs</DependentUpon>
+    </Compile>
     <Compile Include="Diagnostics\Logging\LoggerWrapper.cs" />
     <Compile Include="Diagnostics\Logging\LogPriority.cs" />
     <Compile Include="Diagnostics\Logging\NullLogger.cs" />
