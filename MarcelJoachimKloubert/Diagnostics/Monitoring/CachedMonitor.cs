@@ -93,7 +93,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Monitoring
 
         #endregion Delegates (1)
 
-        #region Methods (3)
+        #region Methods (4)
 
         private static DateTimeOffset GetNow(CachedMonitor monitor)
         {
@@ -158,6 +158,25 @@ namespace MarcelJoachimKloubert.Diagnostics.Monitoring
             }
         }
 
-        #endregion Methods (3)
+        /// <summary>
+        /// Converts a function that only returns a <see cref="DateTimeOffset" /> value to
+        /// a <see cref="TimeProvider" /> instance.
+        /// </summary>
+        /// <param name="func">The function to convert.</param>
+        /// <returns>The converted function.</returns>
+        /// <remarks>
+        /// Returns <see langword="null" /> if <paramref name="func" /> is <see langword="null" />.
+        /// </remarks>
+        public static TimeProvider ToTimeProvider(Func<DateTimeOffset> func)
+        {
+            if (func == null)
+            {
+                return null;
+            }
+
+            return (monitor) => func();
+        }
+
+        #endregion Methods (4)
     }
 }
