@@ -61,10 +61,7 @@ namespace MarcelJoachimKloubert.Diagnostics
         /// <exception cref="NullReferenceException">
         /// No provider defined.
         /// </exception>
-        public static ILogger Current
-        {
-            get { return _provider(); }
-        }
+        public static ILogger Current => _provider();
 
         #endregion Properties (1)
 

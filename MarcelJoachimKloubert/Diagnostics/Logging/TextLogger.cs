@@ -88,7 +88,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         {
             if (provider == null)
             {
-                throw new ArgumentNullException("provider");
+                throw new ArgumentNullException(nameof(provider));
             }
 
             _PROVIDER = provider;
@@ -112,10 +112,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         /// <summary>
         /// Gets the writer to use.
         /// </summary>
-        public TextWriter Writer
-        {
-            get { return _PROVIDER(this); }
-        }
+        public TextWriter Writer => _PROVIDER(this);
 
         #endregion Properties (1)
 
@@ -133,7 +130,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         {
             if (writer == null)
             {
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             }
 
             return (logger) => writer;
@@ -152,7 +149,7 @@ namespace MarcelJoachimKloubert.Diagnostics.Logging
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             return new StreamWriter(stream, enc ?? Encoding.UTF8);
