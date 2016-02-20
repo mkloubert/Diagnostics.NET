@@ -80,14 +80,14 @@ namespace MarcelJoachimKloubert.Extensions
         /// <exception cref="ArgumentNullException">
         /// <paramref name="logger" /> is <see langword="null" />.
         /// </exception>
-        public static Task<bool> AlertAsync(this ILogger logger,
+        public static async Task<bool> AlertAsync(this ILogger logger,
                                             object msg, string tag = null,
                                             LogPriority prio = LogPriority.None)
         {
-            return LogAsync(logger: logger,
-                            msg: msg,
-                            category: LogCategory.Alert, prio: prio,
-                            tag: tag);
+            return await LogAsync(logger: logger,
+                                  msg: msg,
+                                  category: LogCategory.Alert, prio: prio,
+                                  tag: tag);
         }
 
         /// <summary>
@@ -133,14 +133,14 @@ namespace MarcelJoachimKloubert.Extensions
         /// <exception cref="ArgumentNullException">
         /// <paramref name="logger" /> is <see langword="null" />.
         /// </exception>
-        public static Task<bool> CritAsync(this ILogger logger,
-                                           object msg, string tag = null,
-                                           LogPriority prio = LogPriority.None)
+        public static async Task<bool> CritAsync(this ILogger logger,
+                                                 object msg, string tag = null,
+                                                 LogPriority prio = LogPriority.None)
         {
-            return LogAsync(logger: logger,
-                            msg: msg,
-                            category: LogCategory.Critical, prio: prio,
-                            tag: tag);
+            return await LogAsync(logger: logger,
+                                  msg: msg,
+                                  category: LogCategory.Critical, prio: prio,
+                                  tag: tag);
         }
 
         /// <summary>
@@ -186,14 +186,14 @@ namespace MarcelJoachimKloubert.Extensions
         /// <exception cref="ArgumentNullException">
         /// <paramref name="logger" /> is <see langword="null" />.
         /// </exception>
-        public static Task<bool> DebugAsync(this ILogger logger,
-                                            object msg, string tag = null,
-                                            LogPriority prio = LogPriority.None)
+        public static async Task<bool> DebugAsync(this ILogger logger,
+                                                  object msg, string tag = null,
+                                                  LogPriority prio = LogPriority.None)
         {
-            return LogAsync(logger: logger,
-                            msg: msg,
-                            category: LogCategory.Debug, prio: prio,
-                            tag: tag);
+            return await LogAsync(logger: logger,
+                                  msg: msg,
+                                  category: LogCategory.Debug, prio: prio,
+                                  tag: tag);
         }
 
         /// <summary>
@@ -239,14 +239,14 @@ namespace MarcelJoachimKloubert.Extensions
         /// <exception cref="ArgumentNullException">
         /// <paramref name="logger" /> is <see langword="null" />.
         /// </exception>
-        public static Task<bool> EmergAsync(this ILogger logger,
-                                            object msg, string tag = null,
-                                            LogPriority prio = LogPriority.None)
+        public static async Task<bool> EmergAsync(this ILogger logger,
+                                                  object msg, string tag = null,
+                                                  LogPriority prio = LogPriority.None)
         {
-            return LogAsync(logger: logger,
-                            msg: msg,
-                            category: LogCategory.Emergency, prio: prio,
-                            tag: tag);
+            return await LogAsync(logger: logger,
+                                  msg: msg,
+                                  category: LogCategory.Emergency, prio: prio,
+                                  tag: tag);
         }
 
         /// <summary>
@@ -292,14 +292,14 @@ namespace MarcelJoachimKloubert.Extensions
         /// <exception cref="ArgumentNullException">
         /// <paramref name="logger" /> is <see langword="null" />.
         /// </exception>
-        public static Task<bool> ErrAsync(this ILogger logger,
-                                          object msg, string tag = null,
-                                          LogPriority prio = LogPriority.None)
+        public static async Task<bool> ErrAsync(this ILogger logger,
+                                                object msg, string tag = null,
+                                                LogPriority prio = LogPriority.None)
         {
-            return LogAsync(logger: logger,
-                            msg: msg,
-                            category: LogCategory.Error, prio: prio,
-                            tag: tag);
+            return await LogAsync(logger: logger,
+                                  msg: msg,
+                                  category: LogCategory.Error, prio: prio,
+                                  tag: tag);
         }
 
         /// <summary>
@@ -345,14 +345,14 @@ namespace MarcelJoachimKloubert.Extensions
         /// <exception cref="ArgumentNullException">
         /// <paramref name="logger" /> is <see langword="null" />.
         /// </exception>
-        public static Task<bool> InfoAsync(this ILogger logger,
-                                           object msg, string tag = null,
-                                           LogPriority prio = LogPriority.None)
+        public static async Task<bool> InfoAsync(this ILogger logger,
+                                                 object msg, string tag = null,
+                                                 LogPriority prio = LogPriority.None)
         {
-            return LogAsync(logger: logger,
-                            msg: msg,
-                            category: LogCategory.Info, prio: prio,
-                            tag: tag);
+            return await LogAsync(logger: logger,
+                                  msg: msg,
+                                  category: LogCategory.Info, prio: prio,
+                                  tag: tag);
         }
 
         /// <summary>
@@ -364,10 +364,10 @@ namespace MarcelJoachimKloubert.Extensions
         /// <param name="prio">The priority.</param>
         /// <param name="tag">The tag.</param>
         /// <returns>The running task.</returns>
-        public static Task<bool> LogAsync(this ILogger logger,
-                                          object msg,
-                                          LogCategory category = LogCategory.Info, LogPriority prio = LogPriority.None,
-                                          string tag = null)
+        public static async Task<bool> LogAsync(this ILogger logger,
+                                                object msg,
+                                                LogCategory category = LogCategory.Info, LogPriority prio = LogPriority.None,
+                                                string tag = null)
         {
             if (logger == null)
             {
@@ -377,12 +377,12 @@ namespace MarcelJoachimKloubert.Extensions
             var asyncLogger = logger as AsyncLogger;
             if (asyncLogger != null)
             {
-                return asyncLogger.LogAsync(msg: msg,
-                                            category: category, prio: prio,
-                                            tag: tag);
+                return await asyncLogger.LogAsync(msg: msg,
+                                                  category: category, prio: prio,
+                                                  tag: tag);
             }
 
-            return Task.Factory
+            return await Task.Factory
                 .StartNew((state) =>
                      {
                          try
@@ -444,14 +444,14 @@ namespace MarcelJoachimKloubert.Extensions
         /// <exception cref="ArgumentNullException">
         /// <paramref name="logger" /> is <see langword="null" />.
         /// </exception>
-        public static Task<bool> NoteAsync(this ILogger logger,
+        public static async Task<bool> NoteAsync(this ILogger logger,
                                            object msg, string tag = null,
                                            LogPriority prio = LogPriority.None)
         {
-            return LogAsync(logger: logger,
-                            msg: msg,
-                            category: LogCategory.Notice, prio: prio,
-                            tag: tag);
+            return await LogAsync(logger: logger,
+                                  msg: msg,
+                                  category: LogCategory.Notice, prio: prio,
+                                  tag: tag);
         }
 
         /// <summary>
@@ -497,14 +497,14 @@ namespace MarcelJoachimKloubert.Extensions
         /// <exception cref="ArgumentNullException">
         /// <paramref name="logger" /> is <see langword="null" />.
         /// </exception>
-        public static Task<bool> TraceAsync(this ILogger logger,
+        public static async Task<bool> TraceAsync(this ILogger logger,
                                             object msg, string tag = null,
                                             LogPriority prio = LogPriority.None)
         {
-            return LogAsync(logger: logger,
-                            msg: msg,
-                            category: LogCategory.Trace, prio: prio,
-                            tag: tag);
+            return await LogAsync(logger: logger,
+                                  msg: msg,
+                                  category: LogCategory.Trace, prio: prio,
+                                  tag: tag);
         }
 
         /// <summary>
@@ -550,14 +550,14 @@ namespace MarcelJoachimKloubert.Extensions
         /// <exception cref="ArgumentNullException">
         /// <paramref name="logger" /> is <see langword="null" />.
         /// </exception>
-        public static Task<bool> WarnAsync(this ILogger logger,
-                                           object msg, string tag = null,
-                                           LogPriority prio = LogPriority.None)
+        public static async Task<bool> WarnAsync(this ILogger logger,
+                                                 object msg, string tag = null,
+                                                 LogPriority prio = LogPriority.None)
         {
-            return LogAsync(logger: logger,
-                            msg: msg,
-                            category: LogCategory.Warning, prio: prio,
-                            tag: tag);
+            return await LogAsync(logger: logger,
+                                  msg: msg,
+                                  category: LogCategory.Warning, prio: prio,
+                                  tag: tag);
         }
 
         #endregion Methods
