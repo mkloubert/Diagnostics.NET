@@ -6,3 +6,7 @@
 /.vs/MarcelJoachimKloubert/v14/.suo
 /MarcelJoachimKloubert.Diagnostics.Tests/obj
 /MarcelJoachimKloubert.Diagnostics.Tests/bin
+/MarcelJoachimKloubert.Diagnostics.HttpDebugger/obj
+/MarcelJoachimKloubert.Diagnostics.HttpDebugger/bin
+/packages
+/MarcelJoachimKloubert.Diagnostics.HttpDebugger/MarcelJoachimKloubert.Diagnostics.HttpDebugger.csproj.user
