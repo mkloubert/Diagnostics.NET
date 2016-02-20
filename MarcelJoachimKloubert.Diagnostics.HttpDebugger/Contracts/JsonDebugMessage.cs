@@ -27,64 +27,61 @@
  *                                                                                                                    *
  **********************************************************************************************************************/
 
-using MarcelJoachimKloubert.Diagnostics.Debugging;
-using MarcelJoachimKloubert.Diagnostics.Http;
-using MarcelJoachimKloubert.Diagnostics.Http.Logging;
-using MarcelJoachimKloubert.Extensions;
 using System;
+using System.Runtime.Serialization;
 
-namespace MarcelJoachimKloubert.Diagnostics.Tests
+namespace MarcelJoachimKloubert.Diagnostics.Http.Contracts
 {
-    internal static class Program
+    /// <summary>
+    /// A JSON serialized debug message.
+    /// </summary>
+    [DataContract]
+    public class JsonDebugMessage
     {
-        #region Methods
+        #region Properties
 
-        private static void Main()
-        {
-            try
-            {
-                var logger = new HttpLogger();
-                logger.AddHost(null);
+        /// <summary>
+        /// Gets or sets the category ID.
+        /// </summary>
+        [DataMember]
+        public int? cat { get; set; }
 
-                using (var host = new HttpDebuggerHost())
-                {
-                    var subCtx = host.Subscribe(ReceiveMessage);
-                    try
-                    {
-                        host.Start();
+        /// <summary>
+        /// Gets or sets the ID.
+        /// </summary>
+        [DataMember]
+        public string id { get; set; }
 
-                        Console.WriteLine("started");
+        /// <summary>
+        /// Gets or sets the message value.
+        /// </summary>
+        [DataMember]
+        public dynamic msg { get; set; }
 
-                        for (var i = 0; i < 1000; i++)
-                        {
-                            logger.Log("test" + i, tag: "yeah!");
-                        }
+        /// <summary>
+        /// Gets or sets the priority (sort) value.
+        /// </summary>
+        [DataMember]
+        public int? prio { get; set; }
 
-                        Console.ReadLine();
-                    }
-                    finally
-                    {
-                        subCtx.Unsubscribe();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[ERROR]: {0}", ex.GetBaseException());
-            }
+        /// <summary>
+        /// Gets or sets the tag.
+        /// </summary>
+        [DataMember]
+        public string tag { get; set; }
 
-            Console.WriteLine();
-            Console.WriteLine();
+        /// <summary>
+        /// Gets or sets the thread.
+        /// </summary>
+        [DataMember]
+        public JsonDebugMessageThread thread { get; set; }
 
-            Console.WriteLine("===== ENTER =====");
-            Console.ReadLine();
-        }
+        /// <summary>
+        /// Gets or sets the timestamp.
+        /// </summary>
+        [DataMember]
+        public DateTimeOffset? time { get; set; }
 
-        private static void ReceiveMessage(IDebugMessage msg)
-        {
-            Console.WriteLine(msg.Message);
-        }
-
-        #endregion Methods
+        #endregion Properties
     }
 }

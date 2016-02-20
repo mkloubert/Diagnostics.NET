@@ -27,64 +27,22 @@
  *                                                                                                                    *
  **********************************************************************************************************************/
 
-using MarcelJoachimKloubert.Diagnostics.Debugging;
-using MarcelJoachimKloubert.Diagnostics.Http;
-using MarcelJoachimKloubert.Diagnostics.Http.Logging;
-using MarcelJoachimKloubert.Extensions;
 using System;
 
-namespace MarcelJoachimKloubert.Diagnostics.Tests
+namespace MarcelJoachimKloubert.Diagnostics.Debugging
 {
-    internal static class Program
+    /// <summary>
+    /// Describes a debugger.
+    /// </summary>
+    public interface IDebugger
     {
-        #region Methods
+        #region Events
 
-        private static void Main()
-        {
-            try
-            {
-                var logger = new HttpLogger();
-                logger.AddHost(null);
+        /// <summary>
+        /// Is invoked when a debug message is available.
+        /// </summary>
+        event EventHandler<DebugMessageReceivedEventArgs> DebugMessageReceived;
 
-                using (var host = new HttpDebuggerHost())
-                {
-                    var subCtx = host.Subscribe(ReceiveMessage);
-                    try
-                    {
-                        host.Start();
-
-                        Console.WriteLine("started");
-
-                        for (var i = 0; i < 1000; i++)
-                        {
-                            logger.Log("test" + i, tag: "yeah!");
-                        }
-
-                        Console.ReadLine();
-                    }
-                    finally
-                    {
-                        subCtx.Unsubscribe();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[ERROR]: {0}", ex.GetBaseException());
-            }
-
-            Console.WriteLine();
-            Console.WriteLine();
-
-            Console.WriteLine("===== ENTER =====");
-            Console.ReadLine();
-        }
-
-        private static void ReceiveMessage(IDebugMessage msg)
-        {
-            Console.WriteLine(msg.Message);
-        }
-
-        #endregion Methods
+        #endregion Events
     }
 }

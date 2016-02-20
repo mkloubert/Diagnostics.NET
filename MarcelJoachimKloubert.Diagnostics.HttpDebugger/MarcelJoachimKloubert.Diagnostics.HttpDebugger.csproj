@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{681B8342-53EF-4A62-BE4D-BF6F90EEA289}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{A7D2D980-39C7-4E5F-8242-93E21A5FF4FD}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MarcelJoachimKloubert.Diagnostics.Tests</RootNamespace>
-    <AssemblyName>MarcelJoachimKloubert.Diagnostics.Tests</AssemblyName>
+    <RootNamespace>MarcelJoachimKloubert.Diagnostics.Http</RootNamespace>
+    <AssemblyName>MarcelJoachimKloubert.Diagnostics.HttpDebugger</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,8 +30,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,23 +44,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Contracts\JsonDebugMessage.cs" />
+    <Compile Include="Contracts\JsonDebugMessageThread.cs" />
+    <Compile Include="Contracts\JsonDebugMessageUser.cs" />
+    <Compile Include="HttpDebuggerHost.cs" />
+    <Compile Include="Messages\HttpDebugMessage.cs" />
+    <Compile Include="Logging\HttpLogger.cs" />
+    <Compile Include="Messages\HttpDebugMessageThread.cs" />
+    <Compile Include="Messages\HttpDebugMessageUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MarcelJoachimKloubert.Diagnostics.HttpDebugger\MarcelJoachimKloubert.Diagnostics.HttpDebugger.csproj">
-      <Project>{a7d2d980-39c7-4e5f-8242-93e21a5ff4fd}</Project>
-      <Name>MarcelJoachimKloubert.Diagnostics.HttpDebugger</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MarcelJoachimKloubert\MarcelJoachimKloubert.csproj">
       <Project>{aa41d498-b0e8-4a52-a539-fd099ed51308}</Project>
       <Name>MarcelJoachimKloubert</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="..\LICENSE">
-      <Link>LICENSE</Link>
-    </EmbeddedResource>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

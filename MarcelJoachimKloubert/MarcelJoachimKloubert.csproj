@@ -44,6 +44,12 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Diagnostics\Debugging\DebuggerBase.cs" />
+    <Compile Include="Diagnostics\Debugging\DebugMessageReceivedEventArgs.cs" />
+    <Compile Include="Diagnostics\Debugging\IDebugger.cs" />
+    <Compile Include="Diagnostics\Debugging\IDebugMessage.cs" />
+    <Compile Include="Diagnostics\Debugging\IDebugMessageThread.cs" />
+    <Compile Include="Diagnostics\Debugging\IDebugMessageUser.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
     <Compile Include="Diagnostics\Logging\AggregateLogger.cs" />
     <Compile Include="Diagnostics\Logging\AsyncLogger.cs" />
@@ -74,6 +80,11 @@
     </Compile>
     <Compile Include="Diagnostics\Monitoring\MonitorState.cs" />
     <Compile Include="Diagnostics\Monitoring\MonitorWrapper.cs" />
+    <Compile Include="Extensions\Debugger.cs" />
+    <Compile Include="Extensions\DebuggerSubscriptionContext.cs" />
+    <Compile Include="Extensions\IDebuggerSubscriptionContext.cs" />
+    <Compile Include="Extensions\Logger.cs" />
+    <Compile Include="Extensions\_Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

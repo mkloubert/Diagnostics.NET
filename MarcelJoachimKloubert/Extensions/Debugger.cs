@@ -28,61 +28,36 @@
  **********************************************************************************************************************/
 
 using MarcelJoachimKloubert.Diagnostics.Debugging;
-using MarcelJoachimKloubert.Diagnostics.Http;
-using MarcelJoachimKloubert.Diagnostics.Http.Logging;
-using MarcelJoachimKloubert.Extensions;
 using System;
 
-namespace MarcelJoachimKloubert.Diagnostics.Tests
+namespace MarcelJoachimKloubert.Extensions
 {
-    internal static class Program
+    static partial class MJKDiagnosticExtensionMethods
     {
         #region Methods
 
-        private static void Main()
+        /// <summary>
+        /// Subscribes an action for receiving debug messages from a debugger.
+        /// </summary>
+        /// <param name="debugger">The debugger.</param>
+        /// <param name="action">The action to subscribe.</param>
+        /// <returns>The subscription context.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="debugger" /> and/or <paramref name="action" /> is <see langword="null" />.
+        /// </exception>
+        public static IDebuggerSubscriptionContext Subscribe(this IDebugger debugger, Action<IDebugMessage> action)
         {
-            try
+            if (debugger == null)
             {
-                var logger = new HttpLogger();
-                logger.AddHost(null);
-
-                using (var host = new HttpDebuggerHost())
-                {
-                    var subCtx = host.Subscribe(ReceiveMessage);
-                    try
-                    {
-                        host.Start();
-
-                        Console.WriteLine("started");
-
-                        for (var i = 0; i < 1000; i++)
-                        {
-                            logger.Log("test" + i, tag: "yeah!");
-                        }
-
-                        Console.ReadLine();
-                    }
-                    finally
-                    {
-                        subCtx.Unsubscribe();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[ERROR]: {0}", ex.GetBaseException());
+                throw new ArgumentNullException("debugger");
             }
 
-            Console.WriteLine();
-            Console.WriteLine();
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
 
-            Console.WriteLine("===== ENTER =====");
-            Console.ReadLine();
-        }
-
-        private static void ReceiveMessage(IDebugMessage msg)
-        {
-            Console.WriteLine(msg.Message);
+            return new DebuggerSubscriptionContext(debugger, action);
         }
 
         #endregion Methods

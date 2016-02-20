@@ -27,62 +27,86 @@
  *                                                                                                                    *
  **********************************************************************************************************************/
 
-using MarcelJoachimKloubert.Diagnostics.Debugging;
-using MarcelJoachimKloubert.Diagnostics.Http;
-using MarcelJoachimKloubert.Diagnostics.Http.Logging;
-using MarcelJoachimKloubert.Extensions;
 using System;
 
-namespace MarcelJoachimKloubert.Diagnostics.Tests
+namespace MarcelJoachimKloubert.Diagnostics.Debugging
 {
-    internal static class Program
+    /// <summary>
+    /// A basic debugger.
+    /// </summary>
+    abstract public class DebuggerBase : IDebugger
     {
-        #region Methods
+        #region Fields
 
-        private static void Main()
+        /// <summary>
+        /// Stores the object for thread safe operations.
+        /// </summary>
+        protected readonly object _SYNC;
+
+        #endregion Fields
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DebuggerBase" /> class.
+        /// </summary>
+        /// <param name="sync">The custom object for the <see cref="DebuggerBase._SYNC" /> field.</param>
+        protected DebuggerBase(object sync = null)
         {
-            try
-            {
-                var logger = new HttpLogger();
-                logger.AddHost(null);
-
-                using (var host = new HttpDebuggerHost())
-                {
-                    var subCtx = host.Subscribe(ReceiveMessage);
-                    try
-                    {
-                        host.Start();
-
-                        Console.WriteLine("started");
-
-                        for (var i = 0; i < 1000; i++)
-                        {
-                            logger.Log("test" + i, tag: "yeah!");
-                        }
-
-                        Console.ReadLine();
-                    }
-                    finally
-                    {
-                        subCtx.Unsubscribe();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[ERROR]: {0}", ex.GetBaseException());
-            }
-
-            Console.WriteLine();
-            Console.WriteLine();
-
-            Console.WriteLine("===== ENTER =====");
-            Console.ReadLine();
+            _SYNC = sync ?? new object();
         }
 
-        private static void ReceiveMessage(IDebugMessage msg)
+        #endregion Constructors
+
+        #region Events
+
+        /// <inheriteddoc />
+        public event EventHandler<DebugMessageReceivedEventArgs> DebugMessageReceived;
+
+        #endregion Events
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the object for thread safe operations.
+        /// </summary>
+        public object SyncRoot
         {
-            Console.WriteLine(msg.Message);
+            get { return _SYNC; }
+        }
+
+        /// <summary>
+        /// Gets or sets an object that should be linked with that instance.
+        /// </summary>
+        public virtual object Tag { get; set; }
+
+        #endregion Properties
+
+        #region Methods
+
+        /// <summary>
+        /// Raises the <see cref="DebuggerBase.DebugMessageReceived" /> event.
+        /// </summary>
+        /// <param name="msg">The message.</param>
+        /// <returns>Event was raised or not.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="msg" /> is <see langword="null" />.
+        /// </exception>
+        protected bool RaiseDebugMessageReceived(IDebugMessage msg)
+        {
+            if (msg == null)
+            {
+                throw new ArgumentNullException("msg");
+            }
+
+            var handler = DebugMessageReceived;
+            if (handler == null)
+            {
+                return false;
+            }
+
+            handler(this, new DebugMessageReceivedEventArgs(msg));
+            return true;
         }
 
         #endregion Methods

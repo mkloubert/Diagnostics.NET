@@ -1,5 +1,5 @@
 ﻿/**********************************************************************************************************************
- * Diagnostics.NET (https://github.com/mkloubert/Diagnostics.NET)                                                     *
+ * Collections.NET (http://github.marcel-kloubert.eu/wiki/index.php/En/Collections.NET)                               *
  *                                                                                                                    *
  * Copyright (c) 2015, Marcel Joachim Kloubert <marcel.kloubert@gmx.net>                                              *
  * All rights reserved.                                                                                               *
@@ -27,64 +27,12 @@
  *                                                                                                                    *
  **********************************************************************************************************************/
 
-using MarcelJoachimKloubert.Diagnostics.Debugging;
-using MarcelJoachimKloubert.Diagnostics.Http;
-using MarcelJoachimKloubert.Diagnostics.Http.Logging;
-using MarcelJoachimKloubert.Extensions;
-using System;
-
-namespace MarcelJoachimKloubert.Diagnostics.Tests
+namespace MarcelJoachimKloubert.Extensions
 {
-    internal static class Program
+    /// <summary>
+    /// Deiagnostic extension methods.
+    /// </summary>
+    public static partial class MJKDiagnosticExtensionMethods
     {
-        #region Methods
-
-        private static void Main()
-        {
-            try
-            {
-                var logger = new HttpLogger();
-                logger.AddHost(null);
-
-                using (var host = new HttpDebuggerHost())
-                {
-                    var subCtx = host.Subscribe(ReceiveMessage);
-                    try
-                    {
-                        host.Start();
-
-                        Console.WriteLine("started");
-
-                        for (var i = 0; i < 1000; i++)
-                        {
-                            logger.Log("test" + i, tag: "yeah!");
-                        }
-
-                        Console.ReadLine();
-                    }
-                    finally
-                    {
-                        subCtx.Unsubscribe();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[ERROR]: {0}", ex.GetBaseException());
-            }
-
-            Console.WriteLine();
-            Console.WriteLine();
-
-            Console.WriteLine("===== ENTER =====");
-            Console.ReadLine();
-        }
-
-        private static void ReceiveMessage(IDebugMessage msg)
-        {
-            Console.WriteLine(msg.Message);
-        }
-
-        #endregion Methods
     }
 }

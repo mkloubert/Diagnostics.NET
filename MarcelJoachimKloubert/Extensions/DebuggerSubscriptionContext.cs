@@ -28,61 +28,58 @@
  **********************************************************************************************************************/
 
 using MarcelJoachimKloubert.Diagnostics.Debugging;
-using MarcelJoachimKloubert.Diagnostics.Http;
-using MarcelJoachimKloubert.Diagnostics.Http.Logging;
-using MarcelJoachimKloubert.Extensions;
 using System;
 
-namespace MarcelJoachimKloubert.Diagnostics.Tests
+namespace MarcelJoachimKloubert.Extensions
 {
-    internal static class Program
+    internal class DebuggerSubscriptionContext : IDebuggerSubscriptionContext
     {
+        #region Fields
+
+        internal readonly IDebugger DEBUGGER;
+        internal readonly EventHandler<DebugMessageReceivedEventArgs> HANDLER;
+
+        #endregion Fields
+
+        #region Constructors
+
+        internal DebuggerSubscriptionContext(IDebugger debugger, Action<IDebugMessage> action)
+        {
+            IsEnabled = true;
+
+            DEBUGGER = debugger;
+            DEBUGGER.DebugMessageReceived += HANDLER = (sender, e) =>
+                {
+                    if (!IsEnabled)
+                    {
+                        return;
+                    }
+
+                    action(e.Message);
+                };
+        }
+
+        #endregion Constructors
+
+        #region Properties
+
+        public bool IsEnabled { get; set; }
+
+        #endregion Properties
+
         #region Methods
 
-        private static void Main()
+        public bool Unsubscribe()
         {
             try
             {
-                var logger = new HttpLogger();
-                logger.AddHost(null);
-
-                using (var host = new HttpDebuggerHost())
-                {
-                    var subCtx = host.Subscribe(ReceiveMessage);
-                    try
-                    {
-                        host.Start();
-
-                        Console.WriteLine("started");
-
-                        for (var i = 0; i < 1000; i++)
-                        {
-                            logger.Log("test" + i, tag: "yeah!");
-                        }
-
-                        Console.ReadLine();
-                    }
-                    finally
-                    {
-                        subCtx.Unsubscribe();
-                    }
-                }
+                DEBUGGER.DebugMessageReceived -= HANDLER;
+                return true;
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine("[ERROR]: {0}", ex.GetBaseException());
+                return false;
             }
-
-            Console.WriteLine();
-            Console.WriteLine();
-
-            Console.WriteLine("===== ENTER =====");
-            Console.ReadLine();
-        }
-
-        private static void ReceiveMessage(IDebugMessage msg)
-        {
-            Console.WriteLine(msg.Message);
         }
 
         #endregion Methods

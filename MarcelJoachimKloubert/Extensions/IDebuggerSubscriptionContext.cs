@@ -27,63 +27,29 @@
  *                                                                                                                    *
  **********************************************************************************************************************/
 
-using MarcelJoachimKloubert.Diagnostics.Debugging;
-using MarcelJoachimKloubert.Diagnostics.Http;
-using MarcelJoachimKloubert.Diagnostics.Http.Logging;
-using MarcelJoachimKloubert.Extensions;
-using System;
-
-namespace MarcelJoachimKloubert.Diagnostics.Tests
+namespace MarcelJoachimKloubert.Extensions
 {
-    internal static class Program
+    /// <summary>
+    /// Describes a debugger subscription context.
+    /// </summary>
+    public interface IDebuggerSubscriptionContext
     {
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets if messages should be received or not.
+        /// </summary>
+        bool IsEnabled { get; set; }
+
+        #endregion Properties
+
         #region Methods
 
-        private static void Main()
-        {
-            try
-            {
-                var logger = new HttpLogger();
-                logger.AddHost(null);
-
-                using (var host = new HttpDebuggerHost())
-                {
-                    var subCtx = host.Subscribe(ReceiveMessage);
-                    try
-                    {
-                        host.Start();
-
-                        Console.WriteLine("started");
-
-                        for (var i = 0; i < 1000; i++)
-                        {
-                            logger.Log("test" + i, tag: "yeah!");
-                        }
-
-                        Console.ReadLine();
-                    }
-                    finally
-                    {
-                        subCtx.Unsubscribe();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[ERROR]: {0}", ex.GetBaseException());
-            }
-
-            Console.WriteLine();
-            Console.WriteLine();
-
-            Console.WriteLine("===== ENTER =====");
-            Console.ReadLine();
-        }
-
-        private static void ReceiveMessage(IDebugMessage msg)
-        {
-            Console.WriteLine(msg.Message);
-        }
+        /// <summary>
+        /// Removes the subscription.
+        /// </summary>
+        /// <returns>Operation was successful or not.</returns>
+        bool Unsubscribe();
 
         #endregion Methods
     }

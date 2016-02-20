@@ -27,64 +27,30 @@
  *                                                                                                                    *
  **********************************************************************************************************************/
 
-using MarcelJoachimKloubert.Diagnostics.Debugging;
-using MarcelJoachimKloubert.Diagnostics.Http;
-using MarcelJoachimKloubert.Diagnostics.Http.Logging;
-using MarcelJoachimKloubert.Extensions;
-using System;
+using System.Runtime.Serialization;
 
-namespace MarcelJoachimKloubert.Diagnostics.Tests
+namespace MarcelJoachimKloubert.Diagnostics.Http.Contracts
 {
-    internal static class Program
+    /// <summary>
+    /// A JSON serialized debug message that stores data of a thread.
+    /// </summary>
+    [DataContract]
+    public class JsonDebugMessageThread
     {
-        #region Methods
+        #region Properties
 
-        private static void Main()
-        {
-            try
-            {
-                var logger = new HttpLogger();
-                logger.AddHost(null);
+        /// <summary>
+        /// Gets or sets the ID.
+        /// </summary>
+        [DataMember]
+        public string id { get; set; }
 
-                using (var host = new HttpDebuggerHost())
-                {
-                    var subCtx = host.Subscribe(ReceiveMessage);
-                    try
-                    {
-                        host.Start();
+        /// <summary>
+        /// Gets or sets the user.
+        /// </summary>
+        [DataMember]
+        public JsonDebugMessageUser user { get; set; }
 
-                        Console.WriteLine("started");
-
-                        for (var i = 0; i < 1000; i++)
-                        {
-                            logger.Log("test" + i, tag: "yeah!");
-                        }
-
-                        Console.ReadLine();
-                    }
-                    finally
-                    {
-                        subCtx.Unsubscribe();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[ERROR]: {0}", ex.GetBaseException());
-            }
-
-            Console.WriteLine();
-            Console.WriteLine();
-
-            Console.WriteLine("===== ENTER =====");
-            Console.ReadLine();
-        }
-
-        private static void ReceiveMessage(IDebugMessage msg)
-        {
-            Console.WriteLine(msg.Message);
-        }
-
-        #endregion Methods
+        #endregion Properties
     }
 }

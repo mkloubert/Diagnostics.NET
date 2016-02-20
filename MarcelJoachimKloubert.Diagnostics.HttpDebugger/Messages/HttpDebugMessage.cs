@@ -28,63 +28,33 @@
  **********************************************************************************************************************/
 
 using MarcelJoachimKloubert.Diagnostics.Debugging;
-using MarcelJoachimKloubert.Diagnostics.Http;
-using MarcelJoachimKloubert.Diagnostics.Http.Logging;
-using MarcelJoachimKloubert.Extensions;
 using System;
 
-namespace MarcelJoachimKloubert.Diagnostics.Tests
+namespace MarcelJoachimKloubert.Diagnostics.Http.Messages
 {
-    internal static class Program
+    internal class HttpDebugMessage : IDebugMessage
     {
-        #region Methods
+        #region Properties
 
-        private static void Main()
+        public int? Category { get; internal set; }
+
+        public Guid Id { get; internal set; }
+
+        IDebugMessageThread IDebugMessage.Thread
         {
-            try
-            {
-                var logger = new HttpLogger();
-                logger.AddHost(null);
-
-                using (var host = new HttpDebuggerHost())
-                {
-                    var subCtx = host.Subscribe(ReceiveMessage);
-                    try
-                    {
-                        host.Start();
-
-                        Console.WriteLine("started");
-
-                        for (var i = 0; i < 1000; i++)
-                        {
-                            logger.Log("test" + i, tag: "yeah!");
-                        }
-
-                        Console.ReadLine();
-                    }
-                    finally
-                    {
-                        subCtx.Unsubscribe();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[ERROR]: {0}", ex.GetBaseException());
-            }
-
-            Console.WriteLine();
-            Console.WriteLine();
-
-            Console.WriteLine("===== ENTER =====");
-            Console.ReadLine();
+            get { return Thread; }
         }
 
-        private static void ReceiveMessage(IDebugMessage msg)
-        {
-            Console.WriteLine(msg.Message);
-        }
+        public dynamic Message { get; internal set; }
 
-        #endregion Methods
+        public int? Priority { get; internal set; }
+
+        public string Tag { get; internal set; }
+
+        public DateTimeOffset Time { get; internal set; }
+
+        internal HttpDebugMessageThread Thread { get; set; }
+
+        #endregion Properties
     }
 }

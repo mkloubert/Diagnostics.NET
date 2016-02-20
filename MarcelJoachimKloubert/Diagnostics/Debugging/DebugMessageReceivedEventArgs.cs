@@ -27,64 +27,45 @@
  *                                                                                                                    *
  **********************************************************************************************************************/
 
-using MarcelJoachimKloubert.Diagnostics.Debugging;
-using MarcelJoachimKloubert.Diagnostics.Http;
-using MarcelJoachimKloubert.Diagnostics.Http.Logging;
-using MarcelJoachimKloubert.Extensions;
 using System;
 
-namespace MarcelJoachimKloubert.Diagnostics.Tests
+namespace MarcelJoachimKloubert.Diagnostics.Debugging
 {
-    internal static class Program
+    /// <summary>
+    /// Arguments for an event that receives debug messages.
+    /// </summary>
+    public class DebugMessageReceivedEventArgs : EventArgs
     {
-        #region Methods
+        #region Constructors
 
-        private static void Main()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DebugMessageReceivedEventArgs" /> class.
+        /// </summary>
+        /// <param name="msg">
+        /// The value for the <see cref="DebugMessageReceivedEventArgs.Message" /> property.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="msg" /> is <see langword="null" />.
+        /// </exception>
+        public DebugMessageReceivedEventArgs(IDebugMessage msg)
         {
-            try
+            if (msg == null)
             {
-                var logger = new HttpLogger();
-                logger.AddHost(null);
-
-                using (var host = new HttpDebuggerHost())
-                {
-                    var subCtx = host.Subscribe(ReceiveMessage);
-                    try
-                    {
-                        host.Start();
-
-                        Console.WriteLine("started");
-
-                        for (var i = 0; i < 1000; i++)
-                        {
-                            logger.Log("test" + i, tag: "yeah!");
-                        }
-
-                        Console.ReadLine();
-                    }
-                    finally
-                    {
-                        subCtx.Unsubscribe();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[ERROR]: {0}", ex.GetBaseException());
+                throw new ArgumentNullException("msg");
             }
 
-            Console.WriteLine();
-            Console.WriteLine();
-
-            Console.WriteLine("===== ENTER =====");
-            Console.ReadLine();
+            Message = msg;
         }
 
-        private static void ReceiveMessage(IDebugMessage msg)
-        {
-            Console.WriteLine(msg.Message);
-        }
+        #endregion Constructors
 
-        #endregion Methods
+        #region Properties
+
+        /// <summary>
+        /// Gets the underlying message.
+        /// </summary>
+        public IDebugMessage Message { get; private set; }
+
+        #endregion Properties
     }
 }
