@@ -6,3 +6,7 @@
 /MarcelJoachimKloubert/project.lock.json
 /MarcelJoachimKloubert.Diagnostics.Tests/obj
 /MarcelJoachimKloubert.Diagnostics.Tests/bin
+/MarcelJoachimKloubert.Diagnostics.HttpDebugger/obj
+/MarcelJoachimKloubert.Diagnostics.HttpDebugger/bin
+/packages
+/MarcelJoachimKloubert.Diagnostics.HttpDebugger/MarcelJoachimKloubert.Diagnostics.HttpDebugger.csproj.user
